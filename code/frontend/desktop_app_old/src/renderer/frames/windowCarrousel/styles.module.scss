@@ -1,0 +1,30 @@
+.container {
+    $sidePadding: 56px;
+
+    width: calc(100% - 2 * $sidePadding);
+    padding: 0 $sidePadding;
+    height: var(--carrousel-height);
+
+    display: flex;
+    overflow-x: auto;
+    overflow-y: visible;
+    
+    white-space: nowrap;
+    scrollbar-width: none;  // Firefox
+    -ms-overflow-style: none;  // IE and Edge
+
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+
+    > * {
+        scroll-snap-align: center;
+    }
+
+    &::-webkit-scrollbar {
+        display: none;  // Chrome, Safari, and Opera
+    }
+
+    > * {
+        flex-shrink: 0;
+    }
+}

@@ -1,0 +1,64 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    &.light {
+        $accentColor: var(--black-900);
+        $bgColor: var(--white-700);
+
+        background-color: $bgColor;
+        border: 1px solid var(--white-400);
+        input {
+            color: $accentColor;
+        }
+
+        svg {
+            color: $accentColor;
+        }
+    }
+
+    &.dark {
+        $bgColor: var(--black-800);
+        $accentColor: var(--white-700);
+
+        background-color: $bgColor;
+
+        input {
+            color: $accentColor;
+        }
+
+        svg {
+            color: $accentColor;
+        }
+    }
+
+    &.large {
+        $sidePadding: 24px;
+        $height: 56px;
+
+        padding-left: $sidePadding;
+        padding-right: $sidePadding;
+        border-radius: 32px;
+        width: calc(40% - 2 * $sidePadding);
+        height: $height;
+    }
+
+    &.small {
+        $sidePadding: 16px;
+        $height: 48px;
+
+        padding-left: $sidePadding;
+        padding-right: $sidePadding;
+        border-radius: 24px;
+        width: calc(40% - 2 * $sidePadding);
+        height: $height;
+    }
+
+    input {
+        width: 100%;
+        height: 100%;
+
+        font: var(--typo-par-l);
+    }
+}

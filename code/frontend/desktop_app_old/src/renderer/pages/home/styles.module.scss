@@ -1,0 +1,9 @@
+.container {
+    height: 100vh;
+
+    background-color: var(--black-800);
+
+    --footer-height: 56px;
+    --nav-height: 64px;
+    --carrousel-height: calc(100vh - var(--footer-height) - var(--nav-height));
+}

@@ -1,0 +1,145 @@
+.container {
+    $height: var(--nav-height);
+    $sidePadding: 56px;
+    $color: var(--white-900);
+    height: $height;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    padding: 0 $sidePadding;
+    position: relative;
+    z-index: 200;
+
+    .left, .right {
+        position: absolute;
+    }
+
+    .left {
+        left: $sidePadding;
+    }
+
+    .right {
+        right: $sidePadding;
+    }
+
+    .middle {
+        $gap: 0;
+
+        display: flex;
+        gap: $gap;
+        width: 100%;
+        justify-content: center;
+        height: 100%;
+
+        p {
+            font: var(--typo-meta-m);
+            letter-spacing: var(--typo-letter-spacing-large);
+            color: $color;
+
+            padding: 0 32px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    .navItem {
+        transition: all 0.3s ease-out;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+            opacity: 1 !important;
+        }
+    }
+
+}
+
+.blurryModal, .darkModal {
+    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
+    z-index: 110;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.blurryModal, .darkModal, .darkModal::before {
+    transition: all 0.3s ease-out 0.1s;
+}
+
+.blurryModal {
+    backdrop-filter: blur(0px);
+}
+
+.darkModal {
+    opacity: 0;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--black-800);
+        opacity: 0;
+    }
+}
+
+body:has(.navItem:hover), body:has(.modalContent:hover) {
+    .blurryModal {
+        backdrop-filter: blur(24px);
+    }
+
+    .darkModal {
+        opacity: 1;
+
+        &::before {
+            opacity: 0.4;
+        }
+    }
+
+    .navItem {
+        opacity: 0.4;
+    }
+
+    .modalContent {
+        pointer-events: all;
+    }
+}
+
+.modalContent {
+    $navHeight: 64px;
+    $paddingVer: $navHeight + 48px;
+
+    position: relative;
+    padding-top: $paddingVer;
+    padding-bottom: $paddingVer;
+
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    align-items: center;
+
+    pointer-events: none;
+
+    width: 100%;
+
+    .tabs {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .tabsSep {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+    }
+}
+

@@ -1,0 +1,53 @@
+.wrapper {
+    $color: var(--white-700);
+    $dimension: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: visible;
+
+    width: $dimension;
+    height: $dimension;
+
+    &.up {
+        transform: rotateZ(-90deg);
+    }
+
+    &.down {
+        transform: rotateZ(90deg);
+    }
+
+    &.left {
+        transform: rotateZ(180deg);
+    }
+
+    &.right {
+        transform: rotateZ(0deg);
+    }
+
+    path {
+        stroke: $color;
+        fill: $color;
+    }
+
+    .arrow {
+        transform: scale(1.5);
+
+        transition: all var(--transition-duration) var(--transition-timing);
+
+        path:last-child {
+            transition: all var(--transition-duration) var(--transition-timing);
+            stroke-dasharray: 10;
+            stroke-dashoffset: 10;
+        }
+    }
+}
+
+.hovered.hasStem .arrow {
+    transform: scale(1.5) translateX(2px);
+    path {
+        stroke-dashoffset: 20;
+    }
+}

@@ -1,0 +1,55 @@
+.container {
+    $color: var(--white-900);
+    $gap: 12px;
+    $sidePadding: 56px;
+    $height: var(--footer-height);
+
+    
+    display: flex;
+    align-items: center;
+    width: calc(100% - $sidePadding * 2);
+    justify-content: center;
+    height: $height;
+
+    padding: 0 $sidePadding;
+
+    .middle {
+        display: flex;
+        gap: $gap;  
+    }
+
+    .circle {
+        $dimensions: 10px;
+    
+        width: $dimensions;
+        height: $dimensions;
+        border-radius: 50%;
+        background-color: $color;
+        
+        opacity: 0.4;
+    
+        &.active {
+            opacity: 1;
+        }
+    }
+
+    p {
+        font: var(--typo-meta-m);
+        letter-spacing: var(--typo-letter-spacing-large);
+        color: $color;
+    }
+
+    .left, .right {
+        position: absolute;
+    }
+
+    .left {
+        left: $sidePadding;
+    }
+
+    .right {
+        right: $sidePadding;
+        display: flex;
+        gap: 16px;
+    }
+}

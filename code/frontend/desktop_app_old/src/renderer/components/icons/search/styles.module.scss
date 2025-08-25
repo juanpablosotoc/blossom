@@ -1,0 +1,8 @@
+.container {
+    $dimension: 24px;
+
+    width: $dimension;
+    height: $dimension;
+
+    color: var(--black-900);
+}

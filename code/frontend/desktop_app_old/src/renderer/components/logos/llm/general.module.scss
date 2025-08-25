@@ -1,0 +1,19 @@
+.small {
+    $dimensions: 24px;
+    width: $dimensions;
+    height: $dimensions;
+}
+
+.large {
+    $dimensions: 128px;
+    width: $dimensions;
+
+}
+
+.light path {
+    fill: var(--white-700);
+}
+
+.dark path {
+    fill: var(--black-800);
+}

@@ -1,0 +1,11 @@
+.wrapper {
+    transform: perspective(100px);
+    transition: all 0.3s ease-in;
+
+    &:hover {
+        transition: all 0.1s;
+    }
+    * {
+        transform-style: preserve-3d;
+    }
+}

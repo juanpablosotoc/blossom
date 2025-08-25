@@ -1,0 +1,118 @@
+// variables.scss
+
+:root {
+    // #########################################################################
+    // ############################### COLORS ##################################
+    // #########################################################################
+    $num-shades: 10; // Define the number of shades you want (100 to 900)
+    // PRIMARY COLORS   
+    @for $i from 0 through ($num-shades - 1) {
+        // ------------------------------------
+        // Setting black ----------------------
+        // ------------------------------------
+        $brightness-value: $i * 5%;
+        $name-value: 900 - ($i * 100);
+
+        @if $name-value == 0 {
+        $name-value: "000";
+        }
+
+        // Define the CSS variable using HSL for lightness-based shades
+        --black-#{$name-value}: hsl(0, 0%, #{$brightness-value});
+        --black-#{$name-value}-op-100: hsla(0, 0%, #{$brightness-value}, 1);
+        --black-#{$name-value}-op-40: hsla(0, 0%, #{$brightness-value}, 0.4);
+        --black-#{$name-value}-op-0: hsla(0, 0%, #{$brightness-value}, 0);
+
+        // ------------------------------------
+        // Setting white ----------------------
+        // ------------------------------------
+        $brightness-value: 100 - ($i * 5%);
+
+        --white-#{$name-value}: hsl(0, 0%, #{$brightness-value});
+    }
+
+    // SECONDARY COLORS
+    $num-pastels: 4; // Define the number of pastels you want
+
+    $pink-hue: 335; // Define the hue for pink
+    $cyan-hue: 184; // Define the hue for cyan
+    $blue-hue: 216; // Define the hue for blue
+    @for $i from 0 through ($num-pastels - 1) {
+        // ------------------------------------
+        // Setting pastels --------------------
+        // ------------------------------------
+        $lightness-value: 65% + ($i * 2.5%); // intervals of 2.5
+
+        $name-value: 900 - ($i * 100);
+
+        // Define the CSS variable using HSL for lightness-based pastels
+        --pink-#{$name-value}: hsl(#{$pink-hue}, 100%, #{$lightness-value});
+        --cyan-#{$name-value}: hsl(#{$cyan-hue}, 100%, #{$lightness-value});
+        --blue-#{$name-value}: hsl(#{$blue-hue}, 100%, #{$lightness-value});
+    }
+
+    // #########################################################################
+    // ############################## TYPOGRAPHY ###############################
+    // #########################################################################
+    $inter-font: 'Inter', sans-serif;
+    $sf-font: 'SF Pro Display', 'Inter', sans-serif;
+
+    // Headers -----------------------------------------
+
+    // Title
+    --typo-title-normal: medium 40px #{$sf-font}; // should have 12% as letter spacing
+    
+    --typo-title-xl-black: bold 80px #{$sf-font}; // should have 4% as letter spacing
+    --typo-title-bold: bold 48px #{$sf-font}; // should have 4% as letter spacing
+    --typo-title-m-bold: bold 32px #{$sf-font}; // should have 4% as letter spacing
+    // Subtitle
+    --typo-subtitle-normal: 28px #{$sf-font}; // should have 8% as letter spacing
+    --typo-body-m-bold: bold 14px #{$sf-font}; // should have 8% as letter spacing
+
+
+    // Body --------------------------------------------
+
+    // Metadata
+    --typo-meta-l: 16px #{$inter-font}; // should have 12% as letter spacing
+    --typo-meta-m: 14px #{$inter-font}; // should have 12% as letter spacing
+    --typo-meta-s: 12px #{$inter-font}; // should have 12% as letter spacing
+    --typo-meta-xs: 10px #{$inter-font}; // should have 12% as letter spacing
+
+    // Paragraph
+    --typo-par-xl: 18px #{$inter-font}; // should have 0 as letter spacing
+    --typo-par-l: 16px #{$inter-font}; // should have 0 as letter spacing
+    --typo-par-m: 14px #{$inter-font}; // should have 0 as letter spacing
+    --typo-par-s: 12px #{$inter-font}; // should have 0 as letter spacing
+
+    // Letter spacing 
+    --typo-letter-spacing-large: 3px; // should have 12% as letter spacing
+    --typo-letter-spacing-medium: 2px; // should have 8% as letter spacing
+    --typo-letter-spacing-small: 1px; // should have 4% as letter spacing
+
+    // #########################################################################
+    // ############################### SPACING #################################
+    // #########################################################################
+
+    // Border Radius
+    --space-bor-rad-xs: 5px;
+    --space-bor-rad-s: 10px;
+    --space-bor-rad-m: 20px;
+    --space-bor-rad-l: 32px;
+
+    // Gap
+    --space-gap-l: 32px;
+    --space-gap-m: 16px;
+    --space-gap-s: 8px;
+    --space-gap-xs: 4px;
+
+    // #########################################################################
+    // ############################### Visual FX ###############################
+    // #########################################################################
+
+    // Opacity
+    --fx-opacity-400: 0.4;
+
+    // Animation
+    --transition-timing: ease;
+    --transition-duration: 0.3s;
+}  

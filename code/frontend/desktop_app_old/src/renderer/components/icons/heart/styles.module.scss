@@ -1,0 +1,11 @@
+.heart {
+    $color: var(--white-900);
+    $dimension: 24px;
+
+    width: $dimension;
+    height: $dimension;
+
+    path {
+        fill: $color;
+    }
+}
