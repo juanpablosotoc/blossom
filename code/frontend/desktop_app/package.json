@@ -1,23 +1,33 @@
 {
   "name": "desktop_app",
   "version": "1.0.0",
-  "main": "dist/main.js",
+  "description": "",
+  "main": "out/main/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "start": "npm run build && electron .",
-    "dev": "NODE_OPTIONS='-r ts-node/register' electron src/main.ts"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "start": "npm run dev"
   },
-  "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "electron": "^31.0.0",
-    "rimraf": "^5.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.0"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@svgr/rollup": "^8.1.0",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
+    "electron": "^37.3.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-vite": "^4.0.0",
+    "sass": "^1.90.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3"
   }
 }

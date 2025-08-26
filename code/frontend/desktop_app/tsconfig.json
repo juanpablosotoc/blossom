@@ -1,16 +1,26 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "outDir": "dist",
-    "rootDir": "src",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx",
     "strict": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "noEmitOnError": true,
-    "allowJs": true
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/renderer/*"],
+      "@myFrames/*": ["src/renderer/frames/*"],
+      "@myComponents/*": ["src/renderer/components/*"],
+      "@myPages/*": ["src/renderer/pages/*"],
+      "@myAssets/*": ["src/renderer/assets/*"],
+      "@myStyles/*": ["src/renderer/styles/*"],
+      "@myUtils/*": ["src/renderer/utils/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.js"]
+  "include": ["src"]
 }

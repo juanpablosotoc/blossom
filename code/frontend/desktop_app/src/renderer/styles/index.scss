@@ -1,5 +1,4 @@
-@import 'variables';
-
+@use './variables' as *;  /* re‑exports vars/mixins into this file’s scope */
 
 * {
   margin: 0;
