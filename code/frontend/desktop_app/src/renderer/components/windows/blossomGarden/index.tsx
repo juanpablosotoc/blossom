@@ -4,7 +4,6 @@ import styles from './styles.module.scss';
 import Blossom from '@myComponents/logos/blossom';
 import img1 from '@myAssets/images/1.jpg';
 import imgProfilePic from '@myAssets/images/profile.png';
-import SearchBar from '@myComponents/searchBar';
 
 interface Props {
     isActive: boolean;
@@ -152,9 +151,9 @@ function generateSquares(prevSquareOpacities: number[] = []): number[] {
             <div className={styles.preview}>
                 <div className={styles.top}>
                     <Blossom size='small' theme='dark' />
-                    <h2>Blossom Garden</h2>
+                    <h2>For You</h2>
+                    <p className={styles.comingSoon}>(Coming Soon)</p>
                 </div>
-                <SearchBar theme='light' size='small' />
                 
             </div>
             <div className={styles.discover}

@@ -1,16 +1,21 @@
-import Search from '@myComponents/icons/search';
+import SearchIcn from '../icons/search';
 import styles from './styles.module.scss';
 
 
 interface Props {
-    theme: 'light' | 'dark';
-    size: 'small' | 'large';
+    className?: string;
 }
-export default function SearchBar({ theme, size }: Props) {
+
+function SearchBar(props: Props) {
     return (
-        <div className={`${styles.container} ${theme === 'light' ? styles.light : styles.dark} ${size === 'small' ? styles.small : styles.large}`}>
-            <Search />
-            <input type="text" placeholder="Search" />
+        <div className={`${styles.container} ${props.className ? props.className : ''}`}>
+            <div className={styles.searchInput}>
+                <SearchIcn className={styles.searchIcon} />
+                <input type="text" placeholder="Search or Enter URL..." />
+            </div>
+            <div className={styles.searchSeparator}></div>
         </div>
     );
 }
+
+export default SearchBar;

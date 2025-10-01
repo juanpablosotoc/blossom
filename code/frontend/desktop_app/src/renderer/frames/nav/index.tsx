@@ -3,8 +3,6 @@ import styles from './styles.module.scss';
 import ProfileImg from '@myComponents/profileImg';
 import ProfileImgSrc from '@myAssets/images/profile.png';
 import { createPortal } from 'react-dom';
-import SearchBar from '@myComponents/searchBar';
-import Group from './navGroup';
 import { useState } from 'react';
 
 
@@ -27,7 +25,7 @@ export default function Nav() {
             </div>
             {createPortal(<div className={styles.blurryModal}>
             </div>, document.body)}
-            {createPortal(<div className={styles.darkModal}>
+            {/* {createPortal(<div className={styles.darkModal}>
                 <div className={styles.modalContent}>
                     <SearchBar theme='dark' size='large' />
                     <div className={styles.tabs}>
@@ -44,7 +42,7 @@ export default function Nav() {
                         </div>
                     </div>  
                 </div>
-            </div>, document.body)}
+            </div>, document.body)} */}
         </div>
     );
 };

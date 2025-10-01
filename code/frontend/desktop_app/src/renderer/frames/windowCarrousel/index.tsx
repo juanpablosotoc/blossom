@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+import Search from '@myComponents/windows/search';
 import Assistant from '@myComponents/windows/assistant';
-import styles from './styles.module.scss';
 import BlossomGarden from '@myComponents/windows/blossomGarden';
+
+import styles from './styles.module.scss';
 
 interface Props {
     setActiveWindow: (window: number) => void;
@@ -11,7 +14,7 @@ interface Props {
 const WindowCarrousel: React.FC<Props> = ({ setActiveWindow, activeWindow }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [childWidth, setChildWidth] = useState<number>(0);
-    const windows = [Assistant, BlossomGarden];
+    const windows = [Search, Assistant, BlossomGarden];
 
     // Measure the width of a child after the component mounts
     useEffect(() => {

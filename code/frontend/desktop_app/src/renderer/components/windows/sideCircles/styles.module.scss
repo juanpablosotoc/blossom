@@ -1,0 +1,40 @@
+.container {
+    $sidePadding: 8px;
+    $transition: opacity 0.3s ease-in-out;
+
+    opacity: 0;
+    transition: $transition;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+
+    height: 100%;
+    padding: 0 $sidePadding;
+    transform: translateX(-100%);
+    position: absolute;
+
+    display: flex;
+
+    &.active {
+        opacity: 1;
+    }
+}
+
+
+.circle {
+    $color: var(--white-900);
+    $dimensions: 4px;
+
+    width: $dimensions;
+    height: 100%;
+    // border-radius: 4px;
+    background-color: $color;
+    border-radius: 4px;
+    opacity: 0.4;
+
+    &.active {
+        opacity: 1;
+    }
+}

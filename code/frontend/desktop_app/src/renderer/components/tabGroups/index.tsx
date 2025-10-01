@@ -1,6 +1,6 @@
 import styles from './styles.module.scss';
 import image1 from '@myAssets/images/1.jpg';
-import Tab from '../tab';
+import Tab from './tab';
 
 
 function Group ({activeRow, activeColumn, row, setActiveRow, setActiveColumn}: {activeRow: number, activeColumn: number, row: number, setActiveRow: (row: number) => void, setActiveColumn: (column: number) => void}) {
@@ -25,12 +25,8 @@ function Group ({activeRow, activeColumn, row, setActiveRow, setActiveColumn}: {
                 title: 'Title',
                 type: 'pinned'
             }} />
-            <Tab activeRow={activeRow} activeColumn={activeColumn} row={row} column={4} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} content={{
-                thumbnail: image1,
-                favicon: image1,
-                title: 'Title',
-                type: 'downloaded'
-            }} />
+            <Tab activeRow={activeRow} activeColumn={activeColumn} row={row} column={4} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
+
         </div>
     )
 };

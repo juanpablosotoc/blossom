@@ -11,7 +11,7 @@
 .preview {
     $heightDiscover: calc((100vw - 112px) / 4);
 
-    height: calc(100% - $heightDiscover);
+    height: calc(90% - $heightDiscover);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -34,6 +34,11 @@
         h2 {
             font: var(--typo-meta-l) !important;
             letter-spacing: 6px;
+        }
+        .comingSoon {
+            font: var(--typo-meta-xs);
+            letter-spacing: var(--typo-letter-spacing-large);
+            color: var(--black-900);
         }
     }
 }
