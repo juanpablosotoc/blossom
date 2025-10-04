@@ -15,11 +15,6 @@ export default function Nav() {
             <div className={styles.left}>
                 <Blossom theme="light" size="large" />
             </div>
-            <div className={styles.middle}>
-                <p className={styles.navItem}>Home</p>
-                <p className={styles.navItem}>Search</p>
-                <p className={styles.navItem}>Create</p>
-            </div>
             <div className={styles.right}>
                 <ProfileImg src={ProfileImgSrc} />
             </div>

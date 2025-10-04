@@ -1,29 +1,43 @@
 import styles from './styles.module.scss';
-import Group from '@/components/tabGroups';
 import { useState } from 'react';
 import SearchBar from '@/components/searchBar';
+import TabGrid from '@/components/tabGrid';
+import { Node } from '@/utils/treeTypes';
 
-function First() {
-    const [activeRow, setActiveRow] = useState(2);
-    const [activeColumn, setActiveColumn] = useState(2);
-    
+
+interface Props {
+    setSearchQuery: (query: string) => void;
+    tree: Node[][];
+    setActiveTabId: (id: string) => void;
+    onCreateDir: (row: number, col: number, name: string) => void;
+}
+
+function First(props: Props) {
+    const [choice, setChoice] = useState<'search' | 'tabs'>('search');
+
     return (
         <div className={styles.container}>
             <div className={styles.modalContent}>
-                <div className={styles.tabs}>
-                    <div className={styles.tabsSep}
-                    onMouseLeave={()=>{
-                        setActiveRow(2);
-                        setActiveColumn(2);
-                    }}>
-                        <Group activeRow={activeRow} activeColumn={activeColumn} row={0} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
-                        <Group activeRow={activeRow} activeColumn={activeColumn} row={1} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
-                        <Group activeRow={activeRow} activeColumn={activeColumn} row={2} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
-                        <Group activeRow={activeRow} activeColumn={activeColumn} row={3} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
-                        <Group activeRow={activeRow} activeColumn={activeColumn} row={4} setActiveRow={setActiveRow} setActiveColumn={setActiveColumn} />
+                <div className={styles.choiceWrapper}>
+                    <div className={`${styles.choice} ${choice === 'search' ? styles.active : ''}`} onMouseEnter={()=>setChoice('search')}>
+                        <p>Search</p>
                     </div>
-                </div>  
-                <SearchBar className={styles.searchBar} />
+                    <div className={`${styles.choice} ${choice === 'tabs' ? styles.active : ''}`} onMouseEnter={()=>setChoice('tabs')}>
+                        <p>Tabs</p>
+                    </div>
+                </div>
+
+                <div className={`${styles.choiceContent} ${choice === 'search' ? styles.active : ''}`}>
+                    <SearchBar className={styles.searchBar} setSearchQuery={props.setSearchQuery} />
+                </div>
+                <div className={`${styles.choiceContent} ${choice === 'tabs' ? styles.active : ''}`}>
+                    <div className={styles.tabs}>
+                        <div className={styles.tabsSep}
+                        >
+                            <TabGrid tree={props.tree} setActiveTabId={props.setActiveTabId} onCreateDir={props.onCreateDir} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

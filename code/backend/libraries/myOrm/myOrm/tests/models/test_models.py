@@ -1,7 +1,8 @@
+import asyncio
 import pytest
-from sqlalchemy.exc import IntegrityError, StatementError
+from sqlalchemy.exc import IntegrityError
 
-from myOrm.models import User, ProfileImage, Thread, Message, Asset
+from myOrm.models import User, Thread, Message, FileAttachment
 
 
 # -----------------------
@@ -10,40 +11,31 @@ from myOrm.models import User, ProfileImage, Thread, Message, Asset
 @pytest.fixture
 def sample_user_data():
     return {
+        "profile_picture_url": "https://cdn.example.com/u/1.jpg",
         "name": "Juan Test",
-    }
-
-
-@pytest.fixture
-def sample_profile_image_data():
-    return {
-        "thumbnail_s3_name": "users/1/thumb.jpg",
-        "normal_s3_name": "users/1/normal.jpg",
+        "hashed_password": "$2b$12$abcdefghijklmnopqrstuv",  # any non-empty string (already-hashed)
     }
 
 
 @pytest.fixture
 def sample_thread_data():
+    # PK is openai_thread_id (string)
     return {
-        "name": "General",
-        "ai_name": "BlossomAI",
+        "openai_thread_id": "thread_abc123",
     }
 
 
 @pytest.fixture
 def sample_message_data():
     return {
-        "content": "Hello world",
-        "sender": "user",  # valid enum
+        "type": "user",  # allowed free-text type in your schema
     }
 
 
 @pytest.fixture
-def sample_asset_data():
+def sample_file_attachment_data():
     return {
-        "s3_name": "assets/hello.txt",
-        "file_type": "text/plain",
-        "size": 1234,
+        "file_url": "https://cdn.example.com/files/hello.txt",
     }
 
 
@@ -59,28 +51,10 @@ async def test_create_user(db_session, sample_user_data):
 
     assert user.id is not None
     assert user.name == sample_user_data["name"]
-    assert user.created_at is not None  # server_default timestamp
 
 
 @pytest.mark.asyncio
-async def test_create_profile_image(db_session, sample_user_data, sample_profile_image_data):
-    user = User(**sample_user_data)
-    db_session.add(user)
-    await db_session.commit()
-    await db_session.refresh(user)
-
-    pi = ProfileImage(user_id=user.id, **sample_profile_image_data)
-    db_session.add(pi)
-    await db_session.commit()
-    await db_session.refresh(pi)
-
-    assert pi.user_id == user.id
-    assert pi.thumbnail_s3_name == sample_profile_image_data["thumbnail_s3_name"]
-    assert pi.normal_s3_name == sample_profile_image_data["normal_s3_name"]
-
-
-@pytest.mark.asyncio
-async def test_create_thread_and_message(db_session, sample_user_data, sample_thread_data, sample_message_data):
+async def test_create_thread(db_session, sample_user_data, sample_thread_data):
     user = User(**sample_user_data)
     db_session.add(user)
     await db_session.commit()
@@ -91,55 +65,104 @@ async def test_create_thread_and_message(db_session, sample_user_data, sample_th
     await db_session.commit()
     await db_session.refresh(thread)
 
-    assert thread.id is not None
+    assert thread.openai_thread_id == sample_thread_data["openai_thread_id"]
     assert thread.user_id == user.id
     assert thread.created_at is not None
+    assert thread.updated_at is not None
 
-    msg = Message(thread_id=thread.id, **sample_message_data)
+
+@pytest.mark.asyncio
+async def test_create_message(db_session, sample_user_data, sample_thread_data, sample_message_data):
+    # user
+    user = User(**sample_user_data)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # thread
+    thread = Thread(user_id=user.id, **sample_thread_data)
+    db_session.add(thread)
+    await db_session.commit()
+    await db_session.refresh(thread)
+
+    # message
+    msg = Message(thread_id=thread.openai_thread_id, **sample_message_data)
     db_session.add(msg)
     await db_session.commit()
     await db_session.refresh(msg)
 
     assert msg.id is not None
-    assert msg.thread_id == thread.id
-    assert msg.sender == "user"
+    assert msg.thread_id == thread.openai_thread_id
+    assert msg.type == sample_message_data["type"]
     assert msg.created_at is not None
+    assert msg.updated_at is not None
 
 
 @pytest.mark.asyncio
-async def test_create_asset(db_session, sample_user_data, sample_thread_data, sample_message_data, sample_asset_data):
-    # Setup: user -> thread -> message
+async def test_create_file_attachment(
+    db_session,
+    sample_user_data,
+    sample_thread_data,
+    sample_message_data,
+    sample_file_attachment_data,
+):
+    # user
     user = User(**sample_user_data)
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
 
+    # thread
     thread = Thread(user_id=user.id, **sample_thread_data)
     db_session.add(thread)
     await db_session.commit()
     await db_session.refresh(thread)
 
-    msg = Message(thread_id=thread.id, **sample_message_data)
+    # message
+    msg = Message(thread_id=thread.openai_thread_id, **sample_message_data)
     db_session.add(msg)
     await db_session.commit()
     await db_session.refresh(msg)
 
-    asset = Asset(message_id=msg.id, **sample_asset_data)
-    db_session.add(asset)
+    # file attachment
+    fa = FileAttachment(message_id=msg.id, **sample_file_attachment_data)
+    db_session.add(fa)
     await db_session.commit()
-    await db_session.refresh(asset)
+    await db_session.refresh(fa)
 
-    assert asset.id is not None
-    assert asset.message_id == msg.id
-    assert asset.created_at is not None
+    assert fa.id is not None
+    assert fa.message_id == msg.id
+    assert fa.file_url == sample_file_attachment_data["file_url"]
+    assert fa.created_at is not None
+    assert fa.updated_at is not None
 
 
 # -----------------------
 # Constraints & FKs
 # -----------------------
 @pytest.mark.asyncio
-async def test_message_sender_enum_validation(db_session, sample_user_data, sample_thread_data):
-    # Invalid enum should raise before/at commit
+async def test_message_fk_requires_existing_thread(db_session, sample_message_data):
+    # No thread created; thread_id references non-existent PK -> IntegrityError
+    bad_msg = Message(thread_id="no_such_thread", **sample_message_data)
+    db_session.add(bad_msg)
+    with pytest.raises(IntegrityError):
+        await db_session.commit()
+    await db_session.rollback()
+
+
+@pytest.mark.asyncio
+async def test_file_attachment_fk_requires_existing_message(db_session, sample_file_attachment_data):
+    bad_fa = FileAttachment(message_id=999999, **sample_file_attachment_data)
+    db_session.add(bad_fa)
+    with pytest.raises(IntegrityError):
+        await db_session.commit()
+    await db_session.rollback()
+
+
+@pytest.mark.asyncio
+async def test_delete_user_restricted_when_threads_exist(
+    db_session, sample_user_data, sample_thread_data
+):
     user = User(**sample_user_data)
     db_session.add(user)
     await db_session.commit()
@@ -148,85 +171,65 @@ async def test_message_sender_enum_validation(db_session, sample_user_data, samp
     thread = Thread(user_id=user.id, **sample_thread_data)
     db_session.add(thread)
     await db_session.commit()
-    await db_session.refresh(thread)
 
-    bad_msg = Message(thread_id=thread.id, content="oops", sender="system")  # invalid
-    db_session.add(bad_msg)
-
-    # Depending on dialect, this could surface as StatementError (enum coercion) or IntegrityError
-    with pytest.raises((StatementError, IntegrityError)):
-        await db_session.commit()
-    await db_session.rollback()
-
-
-@pytest.mark.asyncio
-async def test_profile_image_restricts_user_delete(
-    db_session, sample_user_data, sample_profile_image_data
-):
-    # Create user + profile image (FK RESTRICT)
-    user = User(**sample_user_data)
-    db_session.add(user)
-    await db_session.commit()
-    await db_session.refresh(user)
-
-    pi = ProfileImage(user_id=user.id, **sample_profile_image_data)
-    db_session.add(pi)
-    await db_session.commit()
-
-    # Attempt to delete user first -> should fail due to ON DELETE RESTRICT
+    # ON DELETE RESTRICT (no cascade in your DDL)
     db_session.delete(user)
     with pytest.raises(IntegrityError):
         await db_session.commit()
     await db_session.rollback()
 
-    # Delete profile image, then user -> should succeed
-    await db_session.refresh(user)
-    await db_session.refresh(pi)
-    db_session.delete(pi)
+    # Cleanup: delete dependent, then parent
+    await db_session.refresh(thread)
+    db_session.delete(thread)
     await db_session.commit()
 
+    await db_session.refresh(user)
     db_session.delete(user)
     await db_session.commit()
 
 
 @pytest.mark.asyncio
-async def test_delete_user_cascades_threads_and_messages(
+async def test_delete_thread_restricted_when_messages_exist(
     db_session, sample_user_data, sample_thread_data, sample_message_data
 ):
-    # Setup: user -> thread -> message
     user = User(**sample_user_data)
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
 
-    # Ensure no profile_image exists so delete is not RESTRICTed
     thread = Thread(user_id=user.id, **sample_thread_data)
     db_session.add(thread)
     await db_session.commit()
     await db_session.refresh(thread)
 
-    msg = Message(thread_id=thread.id, **sample_message_data)
+    msg = Message(thread_id=thread.openai_thread_id, **sample_message_data)
     db_session.add(msg)
     await db_session.commit()
-    await db_session.refresh(msg)
 
-    # Deleting user should cascade to threads -> messages (DB has ON DELETE CASCADE)
-    db_session.delete(user)
+    # ON DELETE RESTRICT on messages.thread_id
+    db_session.delete(thread)
+    with pytest.raises(IntegrityError):
+        await db_session.commit()
+    await db_session.rollback()
+
+    # Cleanup: delete message then thread
+    await db_session.refresh(msg)
+    db_session.delete(msg)
     await db_session.commit()
 
-    # Verify thread/message are gone (query expects no rows)
-    # Note: using scalar_one_or_none requires SELECT; keeping simple existence checks
-    t = await db_session.get(Thread, thread.id)
-    m = await db_session.get(Message, msg.id)
-    assert t is None
-    assert m is None
+    await db_session.refresh(thread)
+    db_session.delete(thread)
+    await db_session.commit()
 
 
 @pytest.mark.asyncio
-async def test_asset_restricts_message_delete_then_ok_after_asset_delete(
-    db_session, sample_user_data, sample_thread_data, sample_message_data, sample_asset_data
+async def test_delete_message_restricted_when_attachments_exist(
+    db_session,
+    sample_user_data,
+    sample_thread_data,
+    sample_message_data,
+    sample_file_attachment_data,
 ):
-    # Setup: user -> thread -> message -> asset
     user = User(**sample_user_data)
     db_session.add(user)
     await db_session.commit()
@@ -237,31 +240,63 @@ async def test_asset_restricts_message_delete_then_ok_after_asset_delete(
     await db_session.commit()
     await db_session.refresh(thread)
 
-    msg = Message(thread_id=thread.id, **sample_message_data)
+    msg = Message(thread_id=thread.openai_thread_id, **sample_message_data)
     db_session.add(msg)
     await db_session.commit()
     await db_session.refresh(msg)
 
-    asset = Asset(message_id=msg.id, **sample_asset_data)
-    db_session.add(asset)
+    fa = FileAttachment(message_id=msg.id, **sample_file_attachment_data)
+    db_session.add(fa)
     await db_session.commit()
-    await db_session.refresh(asset)
+    await db_session.refresh(fa)
 
-    # Try to delete message while asset exists -> should fail due to ON DELETE RESTRICT
+    # ON DELETE RESTRICT on file_attachments.message_id
     db_session.delete(msg)
     with pytest.raises(IntegrityError):
         await db_session.commit()
     await db_session.rollback()
 
-    # Delete asset, then message -> should succeed
-    await db_session.refresh(msg)
-    await db_session.refresh(asset)
-    db_session.delete(asset)
+    # Cleanup: delete attachment then message
+    await db_session.refresh(fa)
+    db_session.delete(fa)
     await db_session.commit()
 
+    await db_session.refresh(msg)
     db_session.delete(msg)
     await db_session.commit()
 
-    # Final sanity: thread still exists
-    t = await db_session.get(Thread, thread.id)
-    assert t is not None
+
+# -----------------------
+# Updated_at auto-update sanity
+# -----------------------
+@pytest.mark.asyncio
+async def test_updated_at_changes_on_update(
+    db_session, sample_user_data, sample_thread_data, sample_message_data
+):
+    user = User(**sample_user_data)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    thread = Thread(user_id=user.id, **sample_thread_data)
+    db_session.add(thread)
+    await db_session.commit()
+    await db_session.refresh(thread)
+
+    msg = Message(thread_id=thread.openai_thread_id, **sample_message_data)
+    db_session.add(msg)
+    await db_session.commit()
+    await db_session.refresh(msg)
+
+    first_updated = msg.updated_at
+    # ensure a tick passes so MySQL CURRENT_TIMESTAMP will differ
+    await asyncio.sleep(1.1)
+
+    # touch the row; e.g., tweak type string
+    msg.type = "cherry-unprocessed-info"
+    await db_session.commit()
+    await db_session.refresh(msg)
+
+    assert msg.updated_at is not None
+    assert msg.updated_at >= first_updated
+    assert msg.type == "cherry-unprocessed-info"

@@ -5,6 +5,7 @@ interface Props {
     circleCount: number;
     activeCircle: number;
     isActive: boolean;
+    
 }
 
 function SideCircles({ circleCount, activeCircle, isActive }: Props) {

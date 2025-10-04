@@ -1,7 +1,7 @@
 class ChatGPTServiceError(Exception):
     pass
 
-class GeminiServiceError(Exception):
+class LlamaServiceError(Exception):
     pass
 
 class AnthropicServiceError(Exception):

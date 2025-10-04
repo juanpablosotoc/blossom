@@ -15,21 +15,15 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
+    profile_picture_url = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
+    hashed_password = Column(String(255), nullable=False)
 
     # Relationships
-    profile_image = relationship(
-        "ProfileImage",
-        back_populates="user",
-        uselist=False,           # one-to-one
-        cascade="save-update, merge",  # do not auto-delete; DB has ON DELETE RESTRICT
-        passive_deletes=True,
-    )
     threads = relationship(
         "Thread",
         back_populates="user",
-        cascade="all, delete-orphan",  # DB has ON DELETE CASCADE on threads.user_id
+        cascade="save-update, merge",   # DB has ON DELETE RESTRICT on threads.user_id
         passive_deletes=True,
     )
 
@@ -38,51 +32,33 @@ class User(Base):
 
 
 # -----------------------
-# profile_images (1:1 with users, PK = user_id)
-# -----------------------
-class ProfileImage(Base):
-    __tablename__ = "profile_images"
-
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), primary_key=True)
-    thumbnail_s3_name = Column(String(512), nullable=False)
-    normal_s3_name = Column(String(512), nullable=False)
-
-    # Relationships
-    user = relationship("User", back_populates="profile_image")
-
-    def __repr__(self) -> str:
-        return f"<ProfileImage user_id={self.user_id}>"
-
-
-# -----------------------
-# threads
+# threads  (PK = openai_thread_id)
 # -----------------------
 class Thread(Base):
     __tablename__ = "threads"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    name = Column(String(100))
-    ai_name = Column(String(50), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
+    openai_thread_id = Column(String(255), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
     user = relationship("User", back_populates="threads")
     messages = relationship(
         "Message",
         back_populates="thread",
-        cascade="all, delete-orphan",  # DB has ON DELETE CASCADE on messages.thread_id
+        cascade="save-update, merge",   # DB has ON DELETE RESTRICT on messages.thread_id
         passive_deletes=True,
     )
 
-    # Indexes to mirror KEYs in DDL
+    # Helpful indexes (FKs & created_at)
     __table_args__ = (
         Index("idx_threads_user", "user_id"),
         Index("idx_threads_created", "created_at"),
     )
 
     def __repr__(self) -> str:
-        return f"<Thread id={self.id} user_id={self.user_id} ai_name={self.ai_name!r}>"
+        return f"<Thread openai_thread_id={self.openai_thread_id!r} user_id={self.user_id}>"
 
 
 # -----------------------
@@ -92,48 +68,49 @@ class Message(Base):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    thread_id = Column(Integer, ForeignKey("threads.id", ondelete="CASCADE"), nullable=False)
-    content = Column(Text)
-    created_at = Column(DateTime, server_default=func.now())
-    sender = Column(SAEnum("user", "ai", name="sender_enum"), nullable=False)
+    type = Column(String(255), nullable=False)  # 'user' | 'cherry-unprocessed-info' | 'cherry-unprocessed-gutenberg' | 'cherry-processed-gutenberg'
+    content = Column(Text, nullable=True)
+    thread_id = Column(String(255), ForeignKey("threads.openai_thread_id", ondelete="RESTRICT"), nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
     thread = relationship("Thread", back_populates="messages")
-    assets = relationship(
-        "Asset",
+    file_attachments = relationship(
+        "FileAttachment",
         back_populates="message",
-        cascade="save-update, merge",  # DB has ON DELETE RESTRICT -> do NOT cascade delete
+        cascade="save-update, merge",   # DB has ON DELETE RESTRICT on file_attachments.message_id
         passive_deletes=True,
     )
 
     __table_args__ = (
-        Index("idx_messages_thread_created", "thread_id", "created_at"),
+        Index("idx_messages_thread", "thread_id"),
+        Index("idx_messages_created", "created_at"),
     )
 
     def __repr__(self) -> str:
-        return f"<Message id={self.id} thread_id={self.thread_id} sender={self.sender}>"
+        return f"<Message id={self.id} thread_id={self.thread_id!r} type={self.type!r}>"
 
 
 # -----------------------
-# assets
+# file_attachments
 # -----------------------
-class Asset(Base):
-    __tablename__ = "assets"
+class FileAttachment(Base):
+    __tablename__ = "file_attachments"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     message_id = Column(Integer, ForeignKey("messages.id", ondelete="RESTRICT"), nullable=False)
-    s3_name = Column(String(255), nullable=False)
-    file_type = Column(String(50), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    size = Column(Integer, nullable=False)  # UNSIGNED in MySQL; use validation in app if needed
+    file_url = Column(String(255), nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    message = relationship("Message", back_populates="assets")
+    message = relationship("Message", back_populates="file_attachments")
 
     __table_args__ = (
-        Index("idx_assets_message", "message_id"),
-        Index("idx_assets_created", "created_at"),
+        Index("idx_file_attachments_message", "message_id"),
+        Index("idx_file_attachments_created", "created_at"),
     )
 
     def __repr__(self) -> str:
-        return f"<Asset id={self.id} message_id={self.message_id} s3_name={self.s3_name!r}>"
+        return f"<FileAttachment id={self.id} message_id={self.message_id} file_url={self.file_url!r}>"

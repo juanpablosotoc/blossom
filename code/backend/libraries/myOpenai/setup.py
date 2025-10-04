@@ -12,7 +12,7 @@ def parse_reqs(fname):
 
 setup(
     name="myOpenai",
-    version="0.0.0",
+    version="0.0.9",
     packages=find_packages(),
     exclude_package_data={'': ['*.env', '.env']},
     # No default dependencies: you _must_ pick dev _or_ docker

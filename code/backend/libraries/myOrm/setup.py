@@ -12,7 +12,7 @@ def parse_reqs(fname):
 
 setup(
     name="myOrm",
-    version="0.0.2",
+    version="0.0.5",
     packages=find_packages(),
     exclude_package_data={'': ['*.env', '.env']},
     # No default dependencies: you _must_ pick dev _or_ docker

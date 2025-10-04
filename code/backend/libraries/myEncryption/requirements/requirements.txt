@@ -12,8 +12,8 @@ httpx==0.28.1
 idna==3.10
 iniconfig==2.1.0
 jmespath==1.0.1
-myAws @ file:///Users/juanasoto/Desktop/SoftwareDev/official_proyects/zartex/code/backend/libraries/myAws
-myExceptions @ file:///Users/juanasoto/Desktop/SoftwareDev/official_proyects/zartex/code/backend/libraries/myExceptions
+myAws @ file:///Users/juanasoto/Desktop/JUMP/blossom/code/backend/libraries/myAws
+myExceptions @ file:///Users/juanasoto/Desktop/JUMP/blossom/code/backend/libraries/myExceptions
 packaging==25.0
 pluggy==1.6.0
 pydantic==2.11.4

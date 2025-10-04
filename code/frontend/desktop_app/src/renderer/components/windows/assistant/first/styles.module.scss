@@ -1,257 +1,43 @@
 .container {
+    height: 100%;
+    background-color: var(--black-900);
+    border-radius: 12px;
+    overflow: hidden;
 
-    $topPadding: 64px;
-    $bottomPadding: 16px;
-    $borderRadius: 10px;
-    $transition: opacity 0.3s ease-in-out;
-
-    background-color: var(--black-700);
-    border-radius: $borderRadius;
-    $itemWidth: calc(100% - 25vw);
-
-    padding-top: $topPadding;
-    padding-bottom: $bottomPadding;
-    height: calc(100% - $topPadding - $bottomPadding);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-
-    & > * {
-        width: $itemWidth;
+    .llms {
+        display: flex;
+        gap: 64px;
+        align-items: center;
+        justify-content: center;
     }
 
+    .llmWrapper {
+        $verPadding: 32px;
+        padding-top: $verPadding;
+        padding-bottom: $verPadding;
+        $transition: opacity 0.3s ease-in-out;
+        transition: $transition;
+        display: flex;
+        align-self: stretch;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.4;
 
-    .blurryModal, .darkModal {
-        border-radius: $borderRadius;
-        position: absolute;
-        z-index: 75;
-        top: 0;
-        left: 0;
-        width: 100%;
+        &.active, &:hover {
+            opacity: 1;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .contentWrapper {
+        margin-top: -16px;
         height: 100%;
-    
-        opacity: 0;
-        transition: $transition;
-        pointer-events: none;
-    }
-    
-    .llmButton, .threadsContainer {
-        position: relative;
-        z-index: 75;
-    }
-    
-    &:has(.llmButton:hover), &:has(.threadsContainer:hover), &:has(.modalContent:hover) {
-        .blurryModal, .darkModal {
-            opacity: 1;
-        }
-    
-        .llmButton, .threadsContainer {
-            opacity: 0.4;
-            transition: $transition;
-    
-            .chevron {
-                opacity: 0;
-            }
-        }
-    
-        .modalContent {
-            opacity: 1;
-            transition: $transition;
-            pointer-events: all;
+
+        & > * {
+            background-color: var(--black-800);
         }
     }
-    
-    .blurryModal {
-        backdrop-filter: blur(12px);
-    }
-    
-    .darkModal {
-        &::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--black-700);
-    
-            opacity: 0.4;
-        }
-    }
-    
-    .modalContent {
-        $overlap: 32px; // necessary for pointer events to work
-        $paddingTop: 32px;
-        $paddingBottom: 64px;
-    
-        position: absolute;
-        bottom: $overlap;
-    
-        padding-bottom: $paddingBottom;
-        left: 0;
-        transform: translateY(100%);
-    
-        padding-top: $paddingTop + $overlap;
-    
-        width: 100%;
-        opacity: 0;
-        pointer-events: none;
-        transition: $transition;
-    }
-    
-    .chevron {
-        transition: $transition;
-    }    
-}
-
-
-.container:has(.llmActive):has(.modalContent:hover) {
-.llmButton {
-    opacity: 1 !important;
-
-    .chevron {
-        opacity: 1 !important;
-    }
-}
-}
-
-.container:has(.threadsActive):has(.modalContent:hover) {
-.threadsContainer {
-    opacity: 1 !important;
-    h5 {
-        text-decoration: underline;
-    }
-}
-}
-
-.top {
-position: relative;
-z-index: 100;
-display: flex;
-align-items: center;
-justify-content: space-between;
-
-.llmButton:hover, .threadsContainer:hover {
-    opacity: 1 !important;
-
-    .chevron {
-        opacity: 1 !important;
-    }
-}
-
-.llmButton {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    &:hover {
-        cursor: pointer;
-    }
-
-    .llmMetadata {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-
-        $color: var(--black-200);
-        color: $color;
-        font: var(--typo-par-m);
-
-        .top {
-            $color: var(--white-700);
-
-            color: $color;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            font: var(--typo-meta-m);
-            letter-spacing: var(--typo-letter-spacing-large);
-        }
-    }
-}
-
-.threadsContainer {
-    $color: var(--white-700);
-    padding: 16px;
-
-    h5 {
-        color: $color;
-        font: var(--typo-meta-m);
-        letter-spacing: var(--typo-letter-spacing-large);
-    }
-    &:hover {
-        cursor: pointer;
-        h5 {
-            text-decoration: underline;
-        }
-    }
-}
-}
-
-.middle {
-$accentColor: var(--white-700);
-overflow: visible;
-
-.glowingCard {
-    width: 100%;
-    aspect-ratio: 10/4;
-    position: relative;
-    $color: var(--white-700);
-
-    color: $color;
-
-    h2 {
-        width: 100%;
-        font: var(--typo-title-bold);
-        letter-spacing: var(--typo-letter-spacing-small);
-        text-wrap: wrap;
-    }
-
-    .recommendations {
-        width: 100%;
-        display: flex;
-        gap: 8px;
-        font: var(--typo-par-m);
-    }
-}
-
-.content {
-    $verticalPadding: 48px;
-    $horizontalPadding: 48px;
-
-    margin: $verticalPadding $horizontalPadding;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 32px;
-    position: relative;
-    width: calc(100% - 2 * $horizontalPadding);
-}
-}
-
-.bottom {
-position: relative;
-z-index: 50;
-}
-
-.modal {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-backdrop-filter: blur(12px);
-overflow: visible;
-}
-
-@media (max-width: 1100px) {
-.glowingCard {
-    h2 {
-        font: var(--typo-title-m-bold) !important;
-    }
-}
 }

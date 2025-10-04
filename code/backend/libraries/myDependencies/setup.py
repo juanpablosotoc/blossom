@@ -12,7 +12,7 @@ def parse_reqs(fname):
 
 setup(
     name="myDependencies",
-    version="0.0.4",
+    version="0.0.10",
     packages=find_packages(),
     exclude_package_data={'': ['*.env', '.env']},
     # No default dependencies: you _must_ pick dev _or_ docker

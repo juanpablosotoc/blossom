@@ -1,0 +1,14 @@
+.workingDirWrapper {
+    color: var(--black-100);
+    font: var(--typo-meta-m);
+    letter-spacing: var(--typo-letter-spacing-large);
+
+    $verPadding: 8px;
+    padding: $verPadding 0;
+}
+
+.gridWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

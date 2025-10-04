@@ -71,10 +71,10 @@ function Assistant({ isActive }: Props) {
             <div className={styles.wrapper}
             ref={containerRef}>
                 <div className={styles.firstWrapper}>
-                    <First />
+                    <Second />
                 </div>
                 <div className={styles.secondWrapper}>
-                    <Second />
+                    <First />
                 </div>
             </div>
         </div>

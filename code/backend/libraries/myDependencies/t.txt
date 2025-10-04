@@ -1,0 +1,204 @@
+<root>
+        <Audio title="Classical mechanics">
+        Classical mechanics is the branch of physics that describes the motion of macroscopic objects under forces, using concepts of space, time and mass. It applies when speeds are much less than the speed of light and when quantum effects are negligible. It provides a deterministic framework: given initial conditions and forces, the future motion is (in principle) fully determined.
+        </Audio>
+        <br />
+        <h3>Core ideas and formulations</h3>
+        <br />
+        <BigUl>
+            <BigLi title="Newtonian mechanics (force-based)">
+                <ul>
+                    <li>
+                        <p>Newton’s three laws:</p>
+                        <ol>
+                            <li>
+                                <Audio title="Law of inertia">
+                                A body remains at rest or in uniform motion unless acted on by a net force.
+                                </Audio>
+                            </li>
+                            <li>
+                                <Audio title="Law of force">
+                                F="ma" (vector equation): net force equals mass times acceleration.
+                                </Audio>
+                            </li>
+                            <li>
+                                <Audio title="Action–reaction">
+                                Forces come in equal and opposite pairs.
+                                </Audio>
+                            </li>
+                        </ol>
+                    </li>
+                    <li>
+                        <Audio title="Free-body diagrams">
+                        Use free-body diagrams to sum forces. For a particle of mass m at position r(t): m d^2r/dt^2 = F(r, v, t).
+                        </Audio>
+                    </li>
+                    <li>
+                        <Audio title="Point particles and rigid bodies">
+                        Works well for point particles and rigid bodies.
+                        </Audio>
+                    </li>
+                </ul>
+            </BigLi>
+            <BigLi title="Kinematics vs dynamics">
+                <ul>
+                    <li>
+                        <h4>Kinematics</h4>
+                        <p>Description of motion (position, velocity, acceleration) without regard to forces.</p>
+                    </li>
+                    <li>
+                        <h4>Dynamics</h4>
+                        <p>Relates motion to forces (via Newton’s laws or variational principles).</p>
+                    </li>
+                </ul>
+            </BigLi>
+            <BigLi title="Energy and momentum">
+                <ul>
+                    <li>
+                        <p>Kinetic energy <Math expression="T = 1/2 m v^2"></Math> (for a particle).</p>
+                    </li>
+                    <li>
+                        <p>
+                            Potential energy V(r) for conservative forces; total mechanical energy 
+                            <Math expression="E = T + V"></Math> is conserved when forces are conservative and no dissipation.
+                            <MyTooltip>
+                            A force is conservative if the work it does on a particle moving between two points is independent of the path taken. In other words, the work done by the force around any closed path is zero. Examples include gravitational force and electrostatic force.
+                            </MyTooltip>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Linear momentum <Math expression="p = m v"></Math>; conservation of momentum follows from translational symmetry (no external forces).
+                            <MyTooltip>
+                            Translational symmetry means that the laws of physics do not change if a system is shifted (translated) in space. In other words, the physical properties and behavior of a system remain the same regardless of its position in space.
+                            </MyTooltip>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Angular momentum <Math expression="L = r × p"></Math>; conserved when torque is zero (rotational symmetry).
+                            <MyTooltip>
+                            Rotational symmetry means that the laws of physics remain unchanged when a system is rotated about a particular axis. In other words, the physical properties and behavior of a system are invariant under rotations.
+                            </MyTooltip>
+                        </p>
+                    </li>
+                </ul>
+            </BigLi>
+            <BigLi title="Lagrangian and Hamiltonian mechanics (variational formulations)">
+                <ul>
+                    <li>
+                        <p>
+                            Lagrangian <Math expression="L(q, q̇, t) = T − V"></Math> expressed in generalized coordinates q. 
+                            <br />
+                            Equations of motion from the Euler–Lagrange equation: 
+                            <Math expression="d/dt(∂L/∂q̇) − ∂L/∂q = 0"></Math>.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Hamiltonian <Math expression="H(q, p, t) = T + V"></Math> expressed in canonical coordinates
+                            <br />
+                            Hamilton’s equations: 
+                            <Math expression="q̇ = ∂H/∂p"></Math>, <Math expression="ṗ = −∂H/∂q"></Math>
+                        </p>
+                    </li>
+                    <li>
+                        <Audio>
+                        These formulations are powerful for handling constraints, generalized coordinates, symmetries, and transitions to other theories. Noether’s theorem links continuous symmetries to conservation laws.
+                        </Audio>
+                    </li>
+                </ul>
+            </BigLi>
+            <BigLi title="Small oscillations and normal modes">
+                <ul>
+                    <li>
+                        <Audio>
+                        Many systems (pendulum near equilibrium, masses and springs) reduce to harmonic oscillators with equation x¨ + ω^2 x="0" and solutions x(t) = A cos(ωt + φ).
+                        </Audio>
+                    </li>
+                    <li>
+                        <Audio>
+                        Coupled systems have normal modes and eigenfrequencies.
+                        </Audio>
+                    </li>
+                </ul>
+            </BigLi>
+            <BigLi title="Rigid body mechanics and continuum mechanics">
+                <ul>
+                    <li>
+                        <Audio>
+                        Rigid body dynamics includes rotation (torque and moment of inertia I) with equation τ="I" α for rotation about a fixed axis.
+                        </Audio>
+                    </li>
+                    <li>
+                        <Audio>
+                        Continuum mechanics treats deformable media (solids and fluids) using stress, strain, Navier–Stokes equations for fluids, and elasticity for solids.
+                        </Audio>
+                    </li>
+                </ul>
+            </BigLi>
+        </BigUl>
+        <br />
+        <h3>Useful examples</h3>
+        <ul>
+            <li>
+                <h4>Projectile motion (no air resistance)</h4>
+                <p>Horizontal motion <Math expression="x = v_0x t"></Math>, <br /> vertical <Math expression="y = v_0y t − (1/2) g t^2"></Math>.</p>
+            </li>
+            <li>
+                <h4>Simple pendulum (small angle θ)</h4>
+                <p><Math expression="θ¨ + (g/L) θ="0""></Math>, <Math expression="period T ≈ 2π sqrt(L/g)"></Math></p>
+            </li>
+            <li>
+                <h4>Conservation example</h4>
+                <p>Two colliding billiard balls conserve total momentum (and energy if elastic), allowing solution of post-collision velocities.</p>
+            </li>
+        </ul>
+        <br />
+        <h3>Limitations and when to go beyond</h3>
+        <ul>
+            <li>
+                <p>Relativistic effects require special relativity when speeds approach light speed <MyTooltip>Use relativistic dynamics</MyTooltip>.</p>
+            </li>
+            <li>
+                <p>Atomic- and subatomic-scale systems require quantum mechanics.</p>
+            </li>
+            <li>
+                <Audio title="Classical mechanics">
+                Classical mechanics also can be extended to include dissipation (friction, drag) phenomenologically, but these break time-reversal symmetry and simple energy conservation.
+                </Audio>
+            </li>
+        </ul>
+        <br />
+        <h3>Methods of solution</h3>
+        <ul>
+            <li>
+                <Audio title="Analytical methods">
+                Solve differential equations exactly or approximately (perturbation theory, small-angle approximations).
+                </Audio>
+            </li>
+            <li>
+                <Audio title="Numerical integration">
+                For complex or chaotic systems use techniques like Runge–Kutta.
+                </Audio>
+            </li>
+            <li>
+                <Audio title="Dimensional analysis and scaling laws">
+                Help predict behavior without full solutions.
+                </Audio>
+            </li>
+        </ul>
+        <br />
+        <Audio title="Why it matters">
+        Classical mechanics underpins engineering, astrophysics (planetary motion), biomechanics, fluid mechanics, and much of everyday technology. It provides intuition and tools that remain valid across many practical scales even where more advanced theories are required for precision.
+        </Audio>
+        <br />
+        <p>If you want, I can:</p>
+        <ul>
+            <li>Derive Newton’s laws from the Lagrangian for a simple system,</li>
+            <li>Work through a solved example (projectile, pendulum, harmonic oscillator),</li>
+            <li>Show how conservation laws arise from symmetries (Noether’s theorem).</li>
+        </ul>
+        <p>Which would you prefer?</p>
+        </root>
+

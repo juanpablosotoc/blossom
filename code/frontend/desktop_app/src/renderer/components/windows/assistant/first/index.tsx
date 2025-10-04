@@ -1,62 +1,48 @@
-import OpenAI from '@myComponents/logos/llm/openai';
 import styles from './styles.module.scss';
-import Chevron from '@myComponents/icons/chevron';
-import { useState } from 'react';
-import GlowingCard from '@myComponents/glowingCard';
-import RecommendationCard from '@myComponents/recommendationCard';
-import BlossomImg from '@myComponents/blossomImg';
-import ChatInput from '@myComponents/chatInput';
-import LLM from './llm';
-import Threads from './thread';
+import { useRef, useState } from 'react';
+import Anthropic from '@/components/logos/llm/anthropic';
+import Meta from '@/components/logos/llm/meta';
+import OpenAI from '@/components/logos/llm/openai';
+import { createWebview } from '@/utils/webview';
+import { useEffect } from 'react';
+import Second from '../../search/second';
 
 
 function First() {
-    const [llmHovered, setLLMHovered] = useState(false);
-    const [modalContent, setModalContent] = useState<'llm' | 'threads'>('llm');
+    const [selectedLLM, setSelectedLLM] = useState<'openai' | 'meta' | 'anthropic'>('openai');
+    const llmsRef = useRef<Map<string, Electron.WebviewTag>>(new Map());
+    const llm_urls = {
+        'openai': 'https://chatgpt.com',
+        'meta': 'https://www.meta.ai/',
+        'anthropic': 'https://claude.ai',
+    };
+    useEffect(() => {
+        const llms = Object.keys(llm_urls) as Array<keyof typeof llm_urls>;
+        llms.forEach((llm) => {
+            const wv = createWebview(llm_urls[llm], llm);
+            document.getElementById("webview-stash")?.appendChild(wv);
+            llmsRef.current.set(llm, wv);
+        });
+    }, []);
 
     return (
         <div className={styles.container}>
-            <div className={`${styles.top} ${modalContent === 'llm' ? styles.llmActive : styles.threadsActive}`}>
-                <div className={styles.modalContent} onMouseLeave={() => setLLMHovered(false)}
-                    onMouseEnter={() => modalContent === 'llm' && setLLMHovered(true)}>
-                    {modalContent === 'llm' ? <LLM /> : <Threads />}
+            <div className={styles.llms}>
+                <div className={styles.llmWrapper + ' ' + (selectedLLM === 'openai' ? styles.active : '')} onClick={() => setSelectedLLM('openai')}>
+                    <OpenAI theme='light' size='large'></OpenAI>
                 </div>
-                <div className={styles.llmButton} onMouseEnter={() => {
-                    setLLMHovered(true)
-                    setModalContent('llm');
-                    }} onMouseLeave={() => setLLMHovered(false)}>
-                    <OpenAI theme='light' size='small' />
-                    <div className={styles.llmMetadata}>
-                        <div className={styles.top}>
-                            <h3>GPT-4o</h3>
-                            <Chevron className={styles.chevron} direction='down' hasStem={true} hovered={llmHovered} />
-                        </div>
-                        <p>Great for most tasks</p>
-                    </div>
+                <div className={styles.llmWrapper + ' ' + (selectedLLM === 'meta' ? styles.active : '')} onClick={() => setSelectedLLM('meta')}>
+                    <Meta size='large'></Meta>
                 </div>
-                <div className={styles.threadsContainer}
-                onMouseEnter={() => setModalContent('threads')} >
-                    <h5>Threads</h5>
+                <div className={styles.llmWrapper + ' ' + (selectedLLM === 'anthropic' ? styles.active : '')} onClick={() => setSelectedLLM('anthropic')}>
+                    <Anthropic theme='light' size='large'></Anthropic>
                 </div>
             </div>
-            <div className={styles.blurryModal}></div>
-            <div className={`${styles.darkModal}`}>
-            </div>
-            <div className={styles.middle}>
-                <GlowingCard className={styles.glowingCard} bgImg={BlossomImg}>
-                    <div className={styles.content}>
-                        <h2>How can I help you today?</h2>
-                        <div className={styles.recommendations}>
-                            <RecommendationCard></RecommendationCard>
-                            <RecommendationCard></RecommendationCard>
-                            <RecommendationCard></RecommendationCard>
-                        </div>
-                    </div>
-                </GlowingCard>  
-            </div>
-            <div className={styles.bottom}>
-                <ChatInput hasFileUpload={true} theme='dark' />
-            </div>
+            {selectedLLM && llmsRef.current.get(selectedLLM) && (
+                <div className={`${styles.contentWrapper}`}>
+                    <Second webview={llmsRef.current.get(selectedLLM)!} />
+                </div>
+            )}
         </div>
     )
 };

@@ -127,7 +127,6 @@ class LLMOpenAI:
         model: str = "gpt-4o-mini-tts",
         voice: str = "alloy",
         speech_file_path: Union[str, Path] = "speech.mp3",
-        format: str = "mp3",
     ) -> Path:
         out_path = Path(speech_file_path)
         try:
@@ -135,7 +134,6 @@ class LLMOpenAI:
                 model=model,
                 voice=voice,
                 input=text,
-                format=format,
             ) as response:
                 await response.stream_to_file(out_path)
             logger.info(f"TTS saved to {out_path}")
@@ -148,28 +146,24 @@ class LLMOpenAI:
     # ----------------------------------------------------
 
     async def get_transcription(
-        self,
-        audio_file_path: Union[str, Path],
-        *,
-        model: str = "gpt-4o-transcribe",  # o "gpt-4o-mini-transcribe"
-        prompt: Optional[str] = None,
-        temperature: Optional[float] = None,
-        granularity: Optional[str] = None,  # "word" | "segment"
+    self,
+    audio_file_path: Union[str, Path],
+    *,
+    model: str = "whisper-1",
+    prompt: Optional[str] = None,
+    granularity: Optional[str] = None,  # "word" | "segment"
     ) -> Any:
         path = Path(audio_file_path)
         try:
-            async with aiofiles.open(path, "rb") as f:
-                transcript = await self._with_retries(
-                    lambda: self.client.audio.transcriptions.create(
-                        file=f,  # el SDK acepta file-like async; si tu runtime no, usa bytes = await f.read()
-                        model=model,
-                        response_format="verbose_json",
-                        prompt=prompt,
-                        temperature=temperature,
-                        timestamp_granularities=[granularity] if granularity else None,
-                    )
+            return await self._with_retries(
+                lambda: self.client.audio.transcriptions.create(
+                    file=path, 
+                    model=model,
+                    response_format="verbose_json",
+                    prompt=prompt,
+                    timestamp_granularities=[granularity] if granularity else None,
                 )
-            return transcript
+            )
         except Exception as e:
             raise self._wrap_error("Error transcribing audio", e)
 
@@ -262,61 +256,25 @@ class LLMOpenAI:
             raise self._wrap_error("Error listing messages", e)
 
     # ----------------------------------------------------
-    # Assistants: Runs  (sigue disponible; para flujos nuevos prefiere Responses API)
-    # ----------------------------------------------------
-
-    async def create_run(
-        self,
-        *,
-        thread_id: str,
-        assistant_id: str,
-        model: Optional[str] = None,
-        instructions: Optional[str] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        tool_resources: Optional[Dict[str, Any]] = None,
-        stream: bool = False,
-        response_format: Union[str, Dict[str, Any]] = "auto",
-        additional_messages: Optional[List[Dict[str, Any]]] = None,
-    ) -> Any:
-        try:
-            return await self._with_retries(
-                lambda: self.client.beta.threads.runs.create(
-                    thread_id=thread_id,
-                    assistant_id=assistant_id,
-                    model=model,
-                    instructions=instructions,
-                    tools=tools or [],
-                    tool_resources=tool_resources,
-                    response_format=response_format,
-                    stream=stream,
-                    additional_messages=additional_messages or [],
-                )
-            )
-        except Exception as e:
-            raise self._wrap_error("Error creating run", e)
-
-    # ----------------------------------------------------
     # Responses API
     # ----------------------------------------------------
 
     async def responses_create(
         self,
         *,
-        model: str,
+        model: Optional[str] = None,  # <-- make optional
         input: Union[str, List[Union[str, Dict[str, Any]]]],
         temperature: Optional[float] = None,
         tools: Optional[List[Dict[str, Any]]] = None,
-        response_format: Optional[Union[str, Dict[str, Any]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Any:
         try:
             return await self._with_retries(
                 lambda: self.client.responses.create(
-                    model=model,
+                    model=model,             # only used if assistant_id is None
                     input=input,
                     temperature=temperature,
                     tools=tools,
-                    response_format=response_format,
                     metadata=metadata,
                 )
             )
