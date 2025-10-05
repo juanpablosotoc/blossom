@@ -1,1 +1,104 @@
-This is the proyect for the blossom browser.
+This is the proyect for The Blossom Browser.
+The following is a ReadMe file drafted with the help of ChatGPT.
+
+🌸 Blossom Browser
+
+Blossom is an AI-powered educational browser built to teach through visual reasoning.
+It integrates a fine-tuned OpenAI model that writes in a custom markup language called Gutenberg, designed to generate deeply visual and interactive explanations for students.
+
+⸻
+
+🧠 Overview
+
+Blossom combines multiple services into a single learning platform:
+
+Component	Description
+Frontend (Web App)	https://notblossom.com — Built with React, TypeScript, and Vite.
+Backend API	https://api.notblossom.com — FastAPI service hosted on AWS.
+Cloud Infrastructure	Fully hosted on AWS, using: • ECS for compute • S3 for file storage • Aurora RDS for persistence • CloudFront for CDN delivery
+Desktop App (macOS)	Electron-based version of the Blossom Browser. Built and packaged into a .dmg for macOS (arm64).
+
+
+⸻
+
+🪄 Features
+	•	AI-assisted learning using fine-tuned OpenAI models
+	•	Custom markup system (Gutenberg) to teach visually
+	•	Streaming architecture for real-time model output
+	•	Integrated FastAPI backend
+	•	Fully cloud-native deployment on AWS
+
+⸻
+
+💻 Installation (macOS DMG)
+
+If you downloaded the Blossom Browser from the official site, macOS may prevent it from opening because it’s unsigned.
+To run it safely:
+
+1️⃣ Remove quarantine from the DMG
+
+xattr -d com.apple.quarantine /path/to/blossom_arm64.dmg
+
+2️⃣ Mount the DMG
+
+hdiutil attach /path/to/blossom_arm64.dmg
+
+3️⃣ Open the mounted volume
+
+Drag Blossom.app into your Applications folder.
+
+4️⃣ Remove quarantine from the installed app
+
+xattr -d com.apple.quarantine /Applications/"Blossom.app"
+
+If you still get a warning, right-click → Open once; macOS will then trust the app.
+
+⸻
+
+🧩 Tech Stack
+
+Frontend
+	•	React 19 / TypeScript / Sass
+	•	Vite / Electron (for desktop)
+	•	SVG & JSX rendering with Babel sandbox
+
+Backend
+	•	FastAPI (Python)
+	•	SQLAlchemy ORM
+	•	AWS RDS (PostgreSQL)
+	•	S3 file storage
+	•	CloudFront distribution
+
+AI / Data
+	•	OpenAI fine-tuned models for Gutenberg language
+	•	SSE streaming endpoints
+	•	TTS & transcription integrations
+
+⸻
+
+🌐 Deployment
+
+Service	Host
+Web App	https://notblossom.com
+API	https://api.notblossom.com
+Assets	Hosted in AWS S3 (Public Read)
+
+
+⸻
+
+👨‍💻 Author
+
+Juan Pablo Soto Cantú
+Full-Stack Engineer & Cloud Architect
+📍 Guadalajara, Mexico (Open to relocation)
+📧 juanpasoto@icloud.com
+🌐 https://notblossom.com
+🐙 github.com/juanpablosotoc
+
+⸻
+
+⚠️ Disclaimer
+
+Blossom Browser is currently distributed unsigned.
+macOS may show a warning when first opened — this is normal and can be bypassed using the commands above.
+
