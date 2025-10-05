@@ -1,1 +1,6 @@
-Here you will find ll of the code.
+Here you will find all of the code.
+
+The frontend includes both the browser and web app.
+
+The backend containes my hand crafted libraries, which I then employed in my microservices.
+Currently, there is only one microservice: cherry_blossom.

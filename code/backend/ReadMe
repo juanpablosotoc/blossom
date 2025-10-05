@@ -1,0 +1,18 @@
+backend/
+├── db.sql                          # Schema or seed definitions
+├── libraries/                      # Custom reusable internal libraries
+│   ├── myAws/                      # AWS S3, SQS, SecretsManager, etc.
+│   ├── myDependencies/             # FastAPI dependency injection utilities
+│   ├── myEncryption/               # AES / JWT / hashing utilities
+│   ├── myExceptions/               # Custom exception classes
+│   ├── myHttp/                     # Request helpers and HTTP wrappers
+│   ├── myOpenai/                   # Wrapper for OpenAI’s APIs (chat, TTS, embeddings)
+│   └── myOrm/                      # SQLAlchemy ORM models and database utils
+└── services/
+    └── cherry_blossom/             # Main FastAPI application (entrypoint)
+        ├── main.py                 # FastAPI app factory
+        ├── routes/                 # All REST/SSE endpoints
+        ├── schema.py               # Pydantic schemas
+        ├── utils.py                # Internal helpers
+        ├── gutenberg/              # Gutenberg post-processing + markup parsing
+        └── config.py               # Configuration and environment variables

@@ -1,4 +1,0 @@
-xattr -d com.apple.quarantine /path/to/dmg/file
-hdiutil attach /path/to/dmg/file
-Then open the dmg file
-Then remove quarantine from the .App itself: /Applications/"Desktop App.app"

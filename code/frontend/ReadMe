@@ -1,1 +1,9 @@
-You will find there are two frontends, the actual browser is in desktop_app, the frontend where people go to download the browser is in web_app.
+You will find there are two frontends:
+
+	- The actual browser is in desktop_app
+	- The frontend where people go to download the browser is in web_app.
+
+Both use very similar tsx components, along with similar technologies.
+Both are made with React, Typescript, SASS and Vite.
+
+The Browser also used Electron for the creation of the desktop application.
