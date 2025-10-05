@@ -1,0 +1,14 @@
+.group {
+    $groupsHeight: 50vh;
+    $groupsCount: 5;
+    $groupGapVertical: 8px;
+
+    $totalGapSpace: calc(($groupsCount - 1) * $groupGapVertical);
+
+
+    display: flex;
+    gap: $groupGapVertical;
+
+    height: calc(($groupsHeight - $totalGapSpace) / $groupsCount);
+    justify-content: center;
+}

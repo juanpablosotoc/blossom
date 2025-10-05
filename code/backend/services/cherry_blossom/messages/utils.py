@@ -1,25 +1,23 @@
-from typing import List, Tuple
-from fastapi import UploadFile
-
-from myOrm.models import FileAttachment  # only for type hints in process_gutenberg
-from myAws import S3
-from ..config import Config
+from fastapi import HTTPException
 
 
-async def process_file_attachments(files: List[UploadFile]) -> List[str]:
+# ---------- helpers to normalize myOpenAI outputs ----------
+def _extract_thread_id(created) -> str:
+    if isinstance(created, str):
+        return created
+    tid = getattr(created, "id", None)
+    if tid:
+        return tid
+    if isinstance(created, dict) and created.get("id"):
+        return created["id"]
+    raise HTTPException(status_code=500, detail="Failed to create thread id")
+
+# Helper to format SSE data
+def sse_data(text: str) -> str:
     """
-    Upload incoming files to S3 and return a list of public URLs.
-    DB persistence is handled by the caller (view).
+    Format one SSE 'message' from arbitrary text.
+    Each line is prefixed with 'data: ' and ends with a blank line.
     """
-    urls: List[str] = []
-    for file in files:
-        # upload
-        S3.upload_fileobj(
-            bucket_name=Config.AWS_BUCKET_NAME,
-            object_name=file.filename,
-            file_obj=file.file,
-        )
-        # generate public URL
-        url = S3.generate_public_url(bucket_name=Config.AWS_BUCKET_NAME, object_name=file.filename)
-        urls.append(url)
-    return urls
+    # If text is empty, still send a blank data line (valid SSE)
+    lines = text.splitlines() if text else [""]
+    return "".join(f"data: {ln}\n" for ln in lines) + "\n"

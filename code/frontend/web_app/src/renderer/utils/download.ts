@@ -1,0 +1,1 @@
+export const DOWNLOAD_URL = "https://cherry-blossom.s3.mx-central-1.amazonaws.com/bin/blossom_arm64.dmg";

@@ -1,104 +1,101 @@
-import { useEffect, useState } from 'react';
-import ChatInput from '@myComponents/chatInput';
-import styles from './styles.module.scss';
-import Neon from '@myComponents/icons/neon';
-import Suggestion from './suggestion';
+import { useState, useRef } from "react";
+import ChatInput from "@myComponents/chatInput";
+import styles from "./styles.module.scss";
+import GlowingCard from "@/components/glowingCard";
+import RecommendationCard from "@myComponents/recommendationCard";
+import BlossomImg from "@myComponents/blossomImg";
+import { messageStream, healthCheck } from "@myUtils/message";
+import GutenbergRenderer from "./gutenberg";
 
-
-export type SUGGESTION_TYPES = 'file' | 'link' | 'tab' | 'Voice Message';
-
+type SSEMessage = { raw: string; json?: any; phase?: string };
 
 function Second() {
-    const [chatFocused, setChatFocused] = useState(false);
-    const [currentPlaceholder, setCurrentPlaceholder] = useState<string>('neon');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const [placeHolderClass, setPlaceHolderClass] = useState<string>('');
+  const [streamText, setStreamText] = useState("");
+  const [finalJSX, setFinalJSX] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-    const [activeRow, setActiveRow] = useState(2);
-    const [activeColumn, setActiveColumn] = useState(2);
-    const [opacities, setOpacities] = useState(Array.from({ length: 25 }).map(() => 0.4));
-    const suggestionMap: Record<number, SUGGESTION_TYPES> = {7: 'file', 11: 'Voice Message', 13: 'link', 17: 'tab'};
-    const numColumns = 5;
+  async function ask(question: string) {
+    if (!question) throw new Error("Question is required");
 
-    function getRowColumn(index: number) {
-        return {
-            row: Math.floor(index / numColumns),
-            column: index % numColumns
-        }
+    // reset state for a new run
+    setIsReady(false);
+    setFinalJSX("");
+    setStreamText("");
+    setIsLoading(true);
+
+    // local accumulator is the single source of truth
+    let acc = "";
+
+    try {
+      const isHealthy = await healthCheck();
+      if (!isHealthy) throw new Error("Health check failed");
+
+      await messageStream(question, {
+        onMessage: ({ raw, phase }: SSEMessage) => {
+          if (!phase) {
+            acc += raw; // keep latest here
+            setStreamText(prev => prev + raw);
+          } else if (
+            phase === "[OPENAI_RAW_RESPONSE_END]" ||
+            phase === "[UNPROCESSED_GUTENBERG_END]"
+          ) {
+            acc = "";            // reset local too
+            setStreamText("");   // and the visual buffer
+          }
+        },
+        onDone: () => {
+          setFinalJSX(acc);      // always has the latest
+          setIsReady(true);
+        },
+      });
+    } catch (e) {
+      console.error("stream error:", e);
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    function calculateEuclideanDistance (row: number, column: number) {
-        const x1 = activeRow;
-        const y1 = activeColumn;
-        const x2 = row;
-        const y2 = column;
-
-        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    }
-
-    useEffect(() => {
-        setOpacities(prev => prev.map((opacity, i) => {
-            const { row, column } = getRowColumn(i);
-            const distance = calculateEuclideanDistance(row, column);
-            return 1 - distance / 4;
-        }));
-    }, [activeRow, activeColumn]);
-
-    let prevTimer: NodeJS.Timeout | null = null;
-
-    useEffect(() => {
-        setPlaceHolderClass(styles.op0);
-
-        if (prevTimer) {
-            clearTimeout(prevTimer);
-        }
-        prevTimer = setTimeout(()=> {
-            if (chatFocused) {
-                setCurrentPlaceholder('suggestions');
-            } else {
-                setCurrentPlaceholder('neon');
-            }
-            setTimeout(()=> {
-                setPlaceHolderClass('');
-            }, 16);
-        }, 300)
-    }, [chatFocused]);
-
-    function handleChatFocus() {
-        setChatFocused(true);
-    }
-
-    function handleChatBlur() {
-        setChatFocused(false);
-    }
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.middle}>
-                {currentPlaceholder === 'neon' ? (
-                    <Neon className={`${styles.neon} ${placeHolderClass}`} />
-                ) : (
-                    <div className={`${styles.grid} ${placeHolderClass}`} 
-                    onMouseLeave={() => {
-                        setActiveRow(2);
-                        setActiveColumn(2);
-                    }}>
-                    {Array.from({ length: 25 }).map((_, item) => {
-                        const { row, column } = getRowColumn(item);
-                        return (
-                            <div key={`itemwrapper${item}`} className={styles.item}>
-                                <div className={styles.innerWrapper}>
-                                    <Suggestion type={suggestionMap[item] || null} row={row} column={column} setRow={setActiveRow} setColumn={setActiveColumn} />
-                                    <div className={styles.curtain} style={{opacity: 1 - opacities[item]}}></div>
-                                </div>
-                            </div>
-                        )})}
-                    </div>
-                )}
+  return (
+    <div className={styles.container + " " + (isLoading ? styles.loading : "")}>
+      <div className={styles.middle + " " + (isReady ? styles.showGutenberg : "")}>
+        {!isReady && !isLoading && (
+          <GlowingCard className={styles.glowingCard} bgImg={BlossomImg}>
+            <div className={styles.content}>
+              <h2>What can I teach you today?</h2>
+              <div className={styles.recommendations}>
+                <RecommendationCard />
+                <RecommendationCard />
+                <RecommendationCard />
+              </div>
             </div>
-            <ChatInput className={styles.chatInput} hasFileUpload={true} theme='light' placeholder='Message Cherry Blossom' onFocus={handleChatFocus} onBlur={handleChatBlur} />
-        </div>
-    );
-};
+          </GlowingCard>
+        )}
+
+        {isLoading && (
+          <div className={styles.gutenbergLoading}>
+            {/* preserve whitespace while streaming */}
+            <pre style={{ whiteSpace: "pre-wrap", margin: 0, color: "var(--white-700)" }}>
+              {streamText}
+            </pre>
+          </div>
+        )}
+
+        {isReady && <GutenbergRenderer jsx={finalJSX} />}
+      </div>
+
+      <ChatInput
+        ref={inputRef as any}
+        className={styles.chatInput}
+        hasFileUpload={true}
+        theme="dark"
+        placeholder="Ask Cherry Blossom to explain something."
+        onSubmit={ask}
+      />
+    </div>
+  );
+}
 
 export default Second;

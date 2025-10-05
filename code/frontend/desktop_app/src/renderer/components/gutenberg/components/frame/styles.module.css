@@ -1,0 +1,13 @@
+.frame {
+    opacity: 0;
+    position: absolute;
+    width: calc(100% - 128px);
+    height: calc(100% - 64px);
+    transition: opacity 0.2s;
+}
+
+.frame.active  {
+    opacity: 1;
+    z-index: 10;
+    transition-delay: 0.2s;
+}

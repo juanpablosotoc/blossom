@@ -1,0 +1,36 @@
+.wrapper {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.wrapper > * {
+    padding: 16px 32px !important;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--main_black);
+}
+
+.top p {
+    font: var(--font_sm);
+    color: var(--tints_black_300);
+}
+
+.code {
+    background-color: var(--shades_black_200) !important;
+}
+
+.top .copy path {
+    stroke: var(--shades_white_200);
+}
+
+.top button:hover {
+    cursor: pointer;
+}
+
+.top button:hover .copy path {
+    stroke: var(--main_white) !important;
+}

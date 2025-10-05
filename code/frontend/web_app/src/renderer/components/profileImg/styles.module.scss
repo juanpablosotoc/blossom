@@ -1,0 +1,25 @@
+.container {
+    $dimensions: 32px;
+
+    width: $dimensions;
+    height: $dimensions;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+
+    .vertical {
+        width: 100%;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+
+    .horizontal {
+        width: auto;
+        height: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+}

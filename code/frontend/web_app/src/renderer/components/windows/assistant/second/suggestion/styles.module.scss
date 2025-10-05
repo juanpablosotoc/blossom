@@ -1,0 +1,37 @@
+.container {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.full {
+    > * {
+        border-radius: 10px;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--white-900);
+    p {
+        font: var(--typo-body-m-bold);
+        letter-spacing: var(--typo-letter-spacing-medium);
+    }
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+}

@@ -1,0 +1,67 @@
+.container {
+    height: 100%;
+    background-color: var(--black-900);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+
+    .llms {
+        display: flex;
+        gap: 64px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .llmWrapper {
+        $verPadding: 32px;
+        padding-top: $verPadding;
+        padding-bottom: $verPadding;
+        $transition: opacity 0.3s ease-in-out;
+        transition: $transition;
+        display: flex;
+        align-self: stretch;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.4;
+
+        &.active, &:hover {
+            opacity: 1;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .contentWrapper {
+        margin-top: -16px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > div {
+            font: var(--typo-title-bold);
+            letter-spacing: var(--typo-letter-spacing-large);
+            text-wrap: wrap;
+            color: var(--white-800);
+            text-align: center;
+
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            svg {
+                $dimensions: 128px;
+                width: $dimensions;
+                height: $dimensions;
+            }
+        }
+    }
+}

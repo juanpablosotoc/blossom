@@ -1,0 +1,16 @@
+.container {
+    $color: var(--black-900);
+    background-color: var(--white-900);
+    padding: 8px;
+    border-radius: 8px;
+    align-self: center;
+
+    &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+
+    p {
+        color: $color !important;
+    }
+}

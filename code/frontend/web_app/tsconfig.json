@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/renderer/*"],
+      "@myFrames/*": ["src/renderer/frames/*"],
+      "@myComponents/*": ["src/renderer/components/*"],
+      "@myPages/*": ["src/renderer/pages/*"],
+      "@myAssets/*": ["src/renderer/assets/*"],
+      "@myStyles/*": ["src/renderer/styles/*"],
+      "@myUtils/*": ["src/renderer/utils/*"]
+    }
+  },
+  "include": ["src"]
+}

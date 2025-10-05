@@ -1,0 +1,26 @@
+.wrapper {
+    overflow-y: hidden;
+    overflow-x: visible;
+    position: relative;
+
+    & > * {
+        transition: all 0.3s ease-out;
+        transition-delay: none;
+    }
+
+    :first-child {
+        position: absolute;
+        transform: translateY(100%);
+    }
+
+    &.hovered {
+
+        & > :first-child {
+            transform: translateY(0);
+            text-decoration: underline;
+        }
+        & > :last-child {
+            transform: translateY(-100%);
+        }
+    }
+}

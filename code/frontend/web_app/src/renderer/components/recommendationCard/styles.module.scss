@@ -1,0 +1,42 @@
+.wrapper {
+    $accentColor: var(--white-700);
+    $semiColor: var(--black-700);
+
+    color: $accentColor;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: calc(100% - 32px);
+    position: relative;
+
+    padding: 16px;
+    transition: transform var(--transition-duration) var(--transition-timing);
+
+    svg path {
+        fill: $accentColor;
+    }
+    // Modal
+    &::before {  
+        content: "";
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        position: absolute;
+        border-radius: 5px;
+
+        background-color: var(--black-700-op-40);
+
+        backdrop-filter: blur(12px);
+    }
+
+    &:hover {
+        transform: translateY(-4px);
+        cursor: pointer;
+    }
+
+    p:last-child {
+        color: $semiColor;
+    }
+}

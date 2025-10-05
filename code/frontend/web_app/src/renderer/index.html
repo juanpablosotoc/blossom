@@ -1,0 +1,20 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="module" src="./renderer.tsx"></script>
+    <title>Blossom</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://cherry-blossom.s3.mx-central-1.amazonaws.com/assets/blossom.svg" />
+
+</head>
+<body>
+    <!-- React will mount the application here -->
+    <div id="root"></div>
+    <div id="webview-stash" style="display:none"></div>
+    <!-- The bundled renderer script will be automatically injected by your bundler (e.g., Webpack) -->
+    <!-- If not using a bundler that injects scripts, you can manually add the script below -->
+    <!-- <script src="./renderer.js"></script> -->
+</body>
+</html>

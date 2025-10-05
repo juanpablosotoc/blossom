@@ -1,0 +1,38 @@
+.wrapper {
+    $dimension: 40px;
+    width: $dimension;
+    height: $dimension;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        $dimension: 24px;
+        width: $dimension;
+        height: $dimension;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+
+}
+
+.dark {
+    $bg-color: var(--white-900);
+    $accent-color: var(--black-900);
+
+    background-color: $bg-color;
+
+    color: $accent-color;
+}
+
+.light {
+    $bg-color: var(--black-900);
+    $accent-color: var(--white-900);
+
+    background-color: $bg-color;
+
+    color: $accent-color;
+}

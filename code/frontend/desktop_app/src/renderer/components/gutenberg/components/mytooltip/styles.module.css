@@ -1,0 +1,6 @@
+.tooltip {
+    font: var(--font_m);
+    max-width: 70%; /* Adjust the width as needed */
+    white-space: normal; /* Allow text to wrap */
+    word-wrap: break-word; /* Break long words if needed */
+}

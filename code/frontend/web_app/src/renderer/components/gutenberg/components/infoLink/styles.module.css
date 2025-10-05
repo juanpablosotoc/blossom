@@ -1,0 +1,32 @@
+.wrapper {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    padding-right: 24px;
+    border-radius: 50px;
+    background-color: var(--main_white);
+    margin: 16px 0;
+    justify-content: space-between;
+}
+
+.wrapper:hover {
+    cursor: pointer;
+}
+
+.chevron {
+    margin-left: 24px;
+}
+
+.wrapper:hover .chevron {
+    transform: scale(1.5) translateX(6px);
+}
+
+.wrapper:hover .chevronStem {
+    stroke-dashoffset: 20;
+}
+
+.wrapper p {
+    font-weight: 700 !important;
+    font: var(--font_sm);
+    color: var(--shades_black_200);
+}

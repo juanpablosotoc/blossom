@@ -1,0 +1,25 @@
+.sequenceEvent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+}
+
+.metadata {
+  letter-spacing: 2px;
+  font: var(--font_sm);
+  display: flex;
+  justify-content: space-between;
+}
+
+.content {
+  width: calc(100% - 128px);
+  height: calc(80% - 128px);
+  border-radius: 10px;
+  padding: 64px;
+  background-color: var(--main_black);
+  overflow: scroll;
+}

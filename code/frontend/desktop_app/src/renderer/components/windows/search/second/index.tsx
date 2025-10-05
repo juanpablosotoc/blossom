@@ -1,8 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./styles.module.scss";
 
-export default function Second({ webview }: { webview: Electron.WebviewTag }) {
+interface Props {
+  webview: Electron.WebviewTag;
+}
+
+export default function Second({ webview }: Props) {
   const slotRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!webview) return;
@@ -21,6 +26,8 @@ export default function Second({ webview }: { webview: Electron.WebviewTag }) {
     };
 
     const onDomReady = () => {
+      setLoading(false);
+
       setIframeHeight();
       // Watch for iframe being replaced
       const mo = new MutationObserver(() => setIframeHeight());
@@ -38,5 +45,5 @@ export default function Second({ webview }: { webview: Electron.WebviewTag }) {
     };
   }, [webview]);
 
-  return <div ref={slotRef} className={styles.container} />;
+  return <div ref={slotRef} className={styles.container + ' ' + (loading ? styles.loading : '')} />;
 }

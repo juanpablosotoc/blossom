@@ -1,0 +1,39 @@
+.light {
+    $color: var(--white-900);
+
+    h1 {
+        color: $color;
+    }
+
+    path{
+        fill: $color;
+    }
+}
+
+.dark {
+    $color: var(--black-800);
+
+    h1 {
+        color: $color;
+    }
+
+    path{
+        fill: $color;
+    }
+}
+
+.blossom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+        $width: 24px;
+        width: $width;
+    }
+
+    h1 {
+        font: var(--typo-meta-m);
+        letter-spacing: var(--typo-letter-spacing-large);
+    }
+}

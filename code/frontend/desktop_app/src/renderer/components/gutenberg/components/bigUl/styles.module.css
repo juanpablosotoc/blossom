@@ -1,0 +1,81 @@
+.sequence {
+    flex-direction: column;
+    gap: 16px;
+    display: flex;
+    height: 70vh;
+}
+
+.content {
+    height: 100vh;
+    position: relative;
+    display: flex;
+}
+
+*[data-is-parent="true"] .sequence {
+    height: 100% !important;
+}
+
+.innerWrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.bar {
+    height: calc(10% - 16px);
+    width: 100%;
+    position: relative;
+    border-radius: 10px;
+    transition: opacity 0.2s;
+}
+
+.bar:hover {
+    cursor: pointer;
+    opacity: 1 !important;
+}
+
+.bar:hover::before {
+    transform: translateY(-100%) translateX(-50%);
+    background-color: var(--main_primary);
+}
+
+.bar::before {
+    content: '';
+    transition: all 0.2s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    background-color: var(--tints_black_200);
+    height: 4px;
+    border-radius: 10px;
+    width: 95%;
+}
+
+.active > .bar::before, .prevActive .bar::before {
+    background-color: var(--main_primary);
+}
+
+.prevActive .bar {
+    opacity: 0.5;
+}
+
+.sequencewrapper {
+    width: 100%;
+    opacity: 0;
+    height: 80%;
+    transition: opacity 0.2s;
+}
+
+.active > .sequencewrapper {
+    opacity: 1;
+    transition-delay: 0.2s;
+}
+
+.sequencewrapper > div {
+    pointer-events: none;
+}
+
+.active > .sequencewrapper > div {
+    z-index: 30;
+    pointer-events: all;
+}

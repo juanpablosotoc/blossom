@@ -1,0 +1,128 @@
+.container {
+    aspect-ratio: 19/9;
+    width: 400px;
+    // background-color: var(--black-900);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 500;
+
+    .keypad {
+        $borderRadius: 10px;
+        border-radius: $borderRadius;
+        background-color: var(--black-800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        border: 1px solid var(--white-400);
+        width: 90%;
+        height: 90%;
+    }
+
+    .finger {
+        $dimension: 32px;
+        border-radius: 50%;
+        background-color: var(--white-900);
+        width: $dimension;
+        height: $dimension;
+
+        &:nth-child(1) {
+            transform: translateY(50%);
+            animation: fingerSwipeRightFirst 1s ease-in-out infinite alternate;
+        }
+        &:nth-child(2) {
+            transform: translateY(-50%);
+            animation: fingerSwipeRightSecond 1s ease-in-out infinite alternate;
+        }
+    }
+
+    p {
+        font: var(--typo-meta-m);
+        letter-spacing: var(--typo-letter-spacing-large);
+        color: var(--white-900);
+        text-align: center;
+    }
+
+    .continueBtn {
+        margin-top: 16px;
+        $color: var(--black-900);
+        color: $color;
+        padding: 8px 16px;
+        border-radius: 5px;
+        font: var(--typo-par-l);
+        cursor: pointer;
+        background-color: var(--white-600);
+        overflow: hidden;
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--white-900);
+            transform: translateX(-100%);
+            animation: continueBtn 5s linear forwards;
+        }
+
+        p {
+            color: $color;
+            position: relative;
+            z-index: 1;
+        }
+    }
+}
+
+@keyframes fingerSwipeRightFirst {
+    0% {
+        // translate x 0 and y 50%
+        transform: translate(0, 50%);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translate(200%, 50%);
+        opacity: 1;
+    }
+}
+
+@keyframes fingerSwipeRightSecond {
+    0% {
+        // translate x 0 and y 50%
+        transform: translate(0, -50%);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translate(200%, -50%);
+        opacity: 1;
+    }
+}
+
+@keyframes continueBtn {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.blurryModal {
+    filter: blur(16px);
+    backdrop-filter: blur(16px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 400;
+}

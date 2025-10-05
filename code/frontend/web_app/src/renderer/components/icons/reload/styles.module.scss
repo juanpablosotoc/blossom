@@ -1,0 +1,9 @@
+.reload {
+    $dimension: 24px;
+    width: $dimension;
+    height: $dimension;
+
+    path {
+        fill: var(--white-900);
+    }
+}

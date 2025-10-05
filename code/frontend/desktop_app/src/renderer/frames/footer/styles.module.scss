@@ -13,6 +13,37 @@
 
     padding: 0 $sidePadding;
 
+    .left {
+        $l_gap: 32px;
+
+        display: flex;
+        gap: $l_gap;
+
+        .windowBtns {
+            $l_gap: 0px;
+            display: flex;
+            gap: $l_gap;
+            align-items: stretch;
+
+            > * {
+                $opacity: 0.4;
+                $transition: opacity 0.3s ease-in-out;
+                transition: $transition;
+                opacity: $opacity;
+                $width: 24px;
+                width: $width;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                    opacity: 1;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
     .middle {
         display: flex;
         gap: $gap;  
@@ -51,5 +82,9 @@
         right: $sidePadding;
         display: flex;
         gap: 16px;
+    }
+
+    .hidden {
+        opacity: 0;
     }
 }

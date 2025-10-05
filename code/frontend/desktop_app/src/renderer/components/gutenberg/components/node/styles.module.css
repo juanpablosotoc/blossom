@@ -1,0 +1,157 @@
+.label {
+    font: var(--font_sm_b);
+    color: var(--main_white);
+}
+
+.handle {
+    visibility: hidden;
+}
+
+.innerNode { 
+    padding: 12px 24px;
+    border-radius: 5px;
+    background-color: var(--main_black);
+    font: var(--font_sm_b);
+    color: var(--main_white);
+    transition: background-color 0.2s;
+}
+
+.innerNode:hover {
+    background-color: var(--main_primary);
+}
+
+.children {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(100% - 128px);
+    height:calc(100% - 128px);
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    backdrop-filter: blur(10px);
+    padding: 64px;
+}
+
+.children:not(.active) * {
+    pointer-events: none !important;
+}
+
+.children::before {
+    background-color: var(--main_black);
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.8;
+    z-index: -5;
+} 
+
+.children.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.metadata {
+    display: flex;
+    align-items: center;
+}
+
+.metadata button {
+    position: absolute;
+    right: 64px;
+    z-index: 10;
+    display: flex;
+    padding: 16px;
+    border-radius: 5px;
+}
+
+.metadata button:hover {
+    cursor: pointer;
+    background-color: var(--tints_black_100);
+}
+
+.title, .nextTitle {
+    font: var(--font_sm);
+    letter-spacing: 2px;
+    color: var(--main_white);
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    height: 100%;
+}
+
+.left, .right {
+    height: 100%;
+}
+
+.left {
+    width: calc(100% - 120px);
+}
+
+.right {
+    position: relative;
+    width: 120px;
+}
+
+.right > * {
+    transform: translateY(-100%);
+}
+
+
+.right > span::before {
+    content: 'Next Node';
+    font: var(--font_s);
+    text-wrap: nowrap;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    transform: translateY(calc(-100% - 16px));
+    color: var(--shades_white_200);
+}
+
+
+.right:hover {
+    cursor: pointer;
+}
+
+.nextTitle, .right .chevron {
+    opacity: 0.5;
+    transition: all 0.2s;
+}
+
+.right:hover .nextTitle, .right:hover .chevron {
+    opacity: 1;
+}
+
+.right .chevron {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) scale(1.5) translateX(100%);
+}
+
+.chevron path {
+    fill: var(--main_white);
+}
+
+.chevronStem {
+    stroke: var(--main_white);
+}
+
+.right:hover .chevron {
+    transform: translateY(-50%) scale(1.5) translateX(calc(100% + 6px));
+}
+
+.right:hover .chevronStem {
+    stroke-dashoffset: 20;
+}

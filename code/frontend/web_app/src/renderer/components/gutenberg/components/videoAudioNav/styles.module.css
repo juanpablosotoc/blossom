@@ -1,0 +1,115 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+    pointer-events: all;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons {
+    display: flex;
+    gap: 24px;
+}
+
+.forwardBackward path {
+    fill: var(--main_white);
+    opacity: 0.5;
+}
+
+.forwardBackward:hover {
+    cursor: pointer;
+}
+
+.forwardBackward:hover path {
+    opacity: 1;
+}
+
+.playPause {
+    background-color: var(--main_white) !important;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    border-radius: 50%;
+}
+
+.playPause:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.playPause > * {
+    visibility: hidden;
+}
+
+.playPause .active {
+    visibility: visible;
+}
+
+.playPause *:last-child {
+    position: absolute;
+}
+
+.sliderWrapper {
+    display: flex;
+    margin-top: 8px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.sliderInput {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--shades_white_200);
+    outline: none;
+    border-radius: 10px;
+    position: relative;
+    background-image: linear-gradient(to right, var(--main_white) 0%, var(--main_white) var(--value, 0%), var(--tints_black_200) var(--value, 0%), var(--tints_black_200) 100%);
+}
+
+.sliderInput:hover {
+    cursor: pointer;
+    background-image: linear-gradient(to right, var(--shades_tertiary_100) 0%, var(--shades_tertiary_100) var(--value, 0%), var(--tints_black_200) var(--value, 0%), var(--tints_black_200) 100%);
+}
+
+.sliderInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    background: var(--main_white);
+    cursor: pointer;
+    position: relative;
+    z-index: 1; /* Ensure the thumb is above the background */
+    display: var(--thumb-display, block); /* Control display with CSS variable */
+}
+
+.sliderInput::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    background: var(--main_white);
+    cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1; /* Ensure the thumb is above the background */
+    display: var(--thumb-display, block); /* Control display with CSS variable */
+}
+.sliderInput:hover::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+}
+
+.sliderInput:hover::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+}
+.timeMetadata {
+    color: var(--shades_white_200);
+    font: var(--font_s);
+}

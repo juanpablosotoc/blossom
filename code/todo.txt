@@ -1,1 +1,0 @@
-make math jsx component accept also expression as attr instead of Mathexpress. both is good.

@@ -1,33 +1,85 @@
 {
   "name": "desktop_app",
   "version": "1.0.0",
+  "productName": "Desktop App",
   "description": "",
   "main": "out/main/index.js",
+  "type": "module",
+  "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron-vite dev",
     "build": "electron-vite build",
-    "preview": "electron-vite preview",
-    "start": "npm run dev"
+    "dist": "electron-builder",
+    "pack": "electron-builder --dir",
+    "start": "npm run dev",
+    "postinstall": "electron-builder install-app-deps"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
+    "dagre": "^0.8.5",
+    "katex": "^0.16.23",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-jsx-parser": "^2.4.1",
+    "react-syntax-highlighter": "^15.6.6",
+    "react-tooltip": "^5.29.1",
+    "reactflow": "^11.11.4",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@babel/standalone": "^7.28.4",
     "@svgr/rollup": "^8.1.0",
+    "@types/babel__standalone": "^7.1.9",
+    "@types/dagre": "^0.7.53",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
+    "@xyflow/react": "^12.8.6",
     "electron": "^37.3.1",
-    "electron-squirrel-startup": "^1.0.1",
+    "electron-builder": "^25.0.0",
     "electron-vite": "^4.0.0",
     "sass": "^1.90.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.3"
+  },
+  "build": {
+    "appId": "com.yourcompany.desktopapp",
+    "files": [
+      "out/**",             
+      "dist/**",                
+      "package.json",
+      "node_modules/**"
+    ],
+    "asar": true,
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}"
+    },
+    "dmg": {
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "win": {
+      "target": ["nsis"],       
+      "artifactName": "${productName}-${version}-win-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility",
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
+    }
   }
 }
+

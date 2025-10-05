@@ -1,5 +1,4 @@
-// src/index.ts
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'node:path'
 
 async function createWindow() {
@@ -7,27 +6,27 @@ async function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.mjs'),
+      preload: join(__dirname, '../preload/index.js'), // << .js is what electron-vite emits
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
-      webviewTag: true,       // <-- enable <webview>
+      webviewTag: true,
     }
   })
 
   if (process.env.ELECTRON_RENDERER_URL) {
     await win.loadURL(process.env.ELECTRON_RENDERER_URL)
   } else {
-    await win.loadFile(join(__dirname, '../renderer/index.html'))
+    await win.loadFile(join(__dirname, '../renderer/index.html')) // << matches out/renderer
   }
 
-  // Any popup from your React window opens in the OS browser
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
   })
 
-  win.webContents.openDevTools({ mode: 'detach' });
+  // comment out for release if you like
+  // win.webContents.openDevTools({ mode: 'detach' })
 }
 
 app.whenReady().then(() => {

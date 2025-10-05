@@ -287,8 +287,7 @@ class LLMOpenAI:
         model: str,
         input: Union[str, List[Union[str, Dict[str, Any]]]],
         temperature: Optional[float] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        response_format: Optional[Union[str, Dict[str, Any]]] = None,
+        tools: Optional[List[Dict[str, Any]]] = [],
         metadata: Optional[Dict[str, Any]] = None,
     ) -> AsyncIterator[str]:
         """
@@ -300,7 +299,6 @@ class LLMOpenAI:
                 input=input,
                 temperature=temperature,
                 tools=tools,
-                response_format=response_format,
                 metadata=metadata,
             ) as stream:
                 async for event in stream:

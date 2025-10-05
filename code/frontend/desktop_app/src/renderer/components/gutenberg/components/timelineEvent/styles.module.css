@@ -1,0 +1,43 @@
+.timelineEvent {
+  display: flex;
+  height: 100%;
+}
+
+.dateButton {
+  width: 100%;
+}
+
+.date {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  word-wrap: wrap;
+}
+
+.date span {
+  transition: opacity 0.2s;
+  opacity: 0.5;
+  font: var(--font_l_b);
+  text-align: center;
+}
+
+.date:hover span {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.content {
+  position: absolute;
+  padding: 64px;
+  right: 0;
+  /* background-color: var(--main_white); */
+  background-color: var(--shades_black_150);
+  box-shadow: 0 0 30px 10px var(--main_primary);
+  /* border: 1px solid var(--main_primary); */
+  border-radius: 10px;
+  top: 50%;
+  overflow: scroll;
+  height: calc(100% - 128px);
+  width: calc(80vw - 128px - 32px - 128px);
+  transform: translateX(calc(100% + 32px)) translateY(-50%);
+}

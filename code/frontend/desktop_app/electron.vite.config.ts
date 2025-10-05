@@ -10,14 +10,14 @@ export default defineConfig({
     build: { rollupOptions: { input: { index: resolve(__dirname, 'src/preload.ts') } } }
   },
   renderer: {
-    // Renderer root is src/renderer, and HTML lives here
     root: resolve(__dirname, 'src/renderer'),
-    publicDir: resolve(__dirname, 'src/public'), // optional static assets
+    publicDir: resolve(__dirname, 'src/public'),
     plugins: [svgr()],
+    // IMPORTANT: make URLs relative for file://
+    vite: { base: './' },
     build: {
-      // Explicit HTML entry so the plugin is happy
       rollupOptions: { input: resolve(__dirname, 'src/renderer/index.html') },
-      outDir: resolve(__dirname, 'dist/renderer'),
+      outDir: resolve(__dirname, 'out/renderer'),   // << moved from dist → out
       emptyOutDir: true
     },
     resolve: {

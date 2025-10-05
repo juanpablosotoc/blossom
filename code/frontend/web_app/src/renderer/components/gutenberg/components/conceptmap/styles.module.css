@@ -1,0 +1,8 @@
+.wrapper {
+    width: 100%;
+    height: 100vh;
+}
+
+*[data-is-parent="true"] .wrapper {
+    height: 100% !important;
+}
