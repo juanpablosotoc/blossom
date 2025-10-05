@@ -1,8 +1,10 @@
 # Ignore any environment files (e.g. .env, dev.env, prod.env) anywhere
 *.env
 
+# Ignore All bin files
 *.dmg
 *.dmg*
+*.zip
 
 # Ignore the entire admin folder
 /admin/
