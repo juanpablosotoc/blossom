@@ -1,10 +1,23 @@
 # Ignore any environment files (e.g. .env, dev.env, prod.env) anywhere
 *.env
 
-# Ignore All bin files
+# Binaries / Installers / Archives
 *.dmg
-*.dmg*
 *.zip
+*.tar
+*.tar.gz
+*.7z
+*.iso
+*.pkg
+*.deb
+*.rpm
+
+# ignore your build artifacts for Electron / Desktop App
+code/frontend/desktop_app/release/
+code/frontend/desktop_app/dist/
+release/
+dist/
+build/
 
 # Ignore the entire admin folder
 /admin/
