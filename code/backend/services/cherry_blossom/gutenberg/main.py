@@ -1,4 +1,5 @@
 import os
+import asyncio
 import re
 import execjs
 from lxml import etree as ET  # you already import this later
@@ -11,6 +12,13 @@ from .handle_tags import handleVideoTag, handleAudioTag  # unchanged
 _VALID_JS_ESCAPE_AFTER_BACKSLASH = r"[0-7xuXbfnrtv\\'\"`]" 
 
 _JS_CTX = None
+
+# Semaphore to avoid hammering openai/other apis
+sem = asyncio.Semaphore(4)
+async def _guarded(coro):
+    async with sem:
+        return await coro
+    
 
 def escape_inner_quotes_in_attrs(s: str) -> str:
     """
@@ -212,29 +220,20 @@ async def transform_gutenberg(content: str) -> str:
     content = content.replace("<=", "&lt;=").replace(">=", "&gt;=")
 
     # ------- Code block handling -------
-    # Match <Code language=...> where the value may be quoted or unquoted, with arbitrary spaces/casing.
-    # Examples matched:
-    #   <Code language="python">
-    #   <Code   language = 'js'  >
-    #   <code LANGUAGE=tsx>
     code_open_re = re.compile(
         r"<\s*Code\s+language\s*=\s*(?P<quote>['\"]?)(?P<lang>[^'\"\s>]+)(?P=quote)\s*>",
         flags=re.IGNORECASE,
     )
-    # Replace opening tag to start code fence with {`
     def _open_code_sub(m: re.Match) -> str:
         lang = m.group("lang")
         return f"<Code language={lang}>\n{{`"
-
     content = code_open_re.sub(_open_code_sub, content)
-
-    # Closing tag: insert `} before </Code>, tolerant to spaces/casing
     content = re.sub(r"<\s*/\s*Code\s*>", "`}\n</Code>", content, flags=re.IGNORECASE)
 
     # Final pass: escape via JS helper (Babel) with sanitization & fallbacks
     content = escape_jsx(content)
 
-    # quote the style attribute
+    # Normalize/escape attributes
     content = normalize_all_attrs(content)
     content = escape_inner_quotes_in_attrs(content)
 
@@ -248,7 +247,7 @@ async def transform_gutenberg(content: str) -> str:
     # Build a synthetic root so lxml can parse multiple top-level nodes
     wrapped_content = f"<root>{content}</root>"
 
-    # dump to dummy file
+    # Optional: dump to file for debugging
     with open('dummy.xml', 'w', encoding='utf-8') as f:
         f.write(wrapped_content)
 
@@ -257,30 +256,56 @@ async def transform_gutenberg(content: str) -> str:
     except ET.XMLSyntaxError as e:
         print(f"XMLSyntaxError in transform_gutenberg: {e}")
         raise ServiceError("Failed to parse the XML content")
-    
-    file_ids = []
-    
-    for tag_name in ['Video', 'Audio']:
-        for element in root.findall(f'.//{tag_name}'):
-            element_string = ET.tostring(element, encoding='unicode', method='xml')
-            if tag_name == 'Video':
-                transformed_element, new_file_ids = await handleVideoTag(element_string)
-                file_ids = [*file_ids, *new_file_ids]
-            elif tag_name == 'Audio':
-                transformed_element, new_file_ids = await handleAudioTag(element_string)
-                file_ids = [*file_ids, *new_file_ids]
-            # Convert the transformed element back to XML and replace the original
-            new_element = ET.fromstring(transformed_element)
-            parent = element.getparent()
-            parent.replace(element, new_element)
-    
+
+    # ---------------------------
+    # CONCURRENT Video/Audio pass
+    # ---------------------------
+    # 1) Collect all target elements (keep references and tag name)
+    targets: list[tuple[str, ET._Element]] = []
+    for tag_name in ("Video", "Audio"):
+        for el in root.findall(f".//{tag_name}"):
+            targets.append((tag_name, el))
+
+    # 2) Prepare all async tasks without mutating the tree yet
+    #    We snapshot the element's XML string at this moment
+    tasks = []
+    for tag_name, el in targets:
+        el_xml = ET.tostring(el, encoding="unicode", method="xml")
+        if tag_name == "Video":
+            tasks.append(_guarded(handleVideoTag(el_xml)))
+        else:  # "Audio"
+            tasks.append(_guarded(handleAudioTag(el_xml)))
+
+    # 3) Run all transforms concurrently
+    try:
+        results = await asyncio.gather(*tasks, return_exceptions=False)
+    except Exception as e:
+        # Surface a clear error if any handler fails
+        raise ServiceError(f"Failed processing media tags concurrently: {e}") from e
+
+    # 4) Apply replacements after all are done
+    #    Each result is (transformed_element_xml: str, new_file_ids: list[str])
+    file_ids: list[str] = []
+    for (tag_name, old_el), (new_xml, new_ids) in zip(targets, results):
+        file_ids.extend(new_ids or [])
+        try:
+            new_el = ET.fromstring(new_xml)
+        except ET.XMLSyntaxError as e:
+            # If handler produced invalid XML, fail gracefully with context
+            raise ServiceError(f"Handler for <{tag_name}> returned invalid XML: {e}") from e
+        parent = old_el.getparent()
+        if parent is None:
+            # Shouldn't happen for normal content, but guard anyway
+            continue
+        parent.replace(old_el, new_el)
+
     # Convert the modified root element back to a string
-    transformed_content = ET.tostring(root, encoding='unicode', method='xml')
-    
+    transformed_content = ET.tostring(root, encoding="unicode", method="xml")
+
     # Remove the wrapping <root> element before returning
-    transformed_content = re.sub(r'^<root>|</root>$', '', transformed_content)
-    
-    # add fragment to the jsx
-    transformed_content = f'<>\n{transformed_content}\n</>'
+    transformed_content = re.sub(r"^<root>|</root>$", "", transformed_content)
+
+    # Add fragment back to the JSX
+    transformed_content = f"<>\n{transformed_content}\n</>"
 
     return transformed_content, file_ids

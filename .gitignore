@@ -1,6 +1,9 @@
 # Ignore any environment files (e.g. .env, dev.env, prod.env) anywhere
 *.env
 
+*.dmg
+*.dmg*
+
 # Ignore the entire admin folder
 /admin/
 
