@@ -1,0 +1,7 @@
+Objectives in pipeline:
+	- eliminate staring and ending fragments.
+	- clean attrs. 
+		Sometimes attrs dont have starting and ending ". 
+		Sometimes attrs use ' as a subsitute for starting/ending ". 
+		Also Sometimes unescaped " can be found inside the attrs.
+	- 

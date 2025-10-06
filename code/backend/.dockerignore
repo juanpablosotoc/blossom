@@ -1,0 +1,26 @@
+# Python caches
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# Virtualenvs (both .venv and venv at ANY depth)
+**/.venv/
+**/venv/
+
+# Node
+**/node_modules/
+
+# Git / OS / env
+.git/
+.DS_Store
+.env
+.env.*
+
+# (Optional) project-specific heavy dirs
+services/cherry_blossom/venv/
+services/cherry_blossom/.venv/
+services/cherry_blossom/node_modules/
+services/cherry_blossom/.pytest_cache/
+temporary_binary_files/

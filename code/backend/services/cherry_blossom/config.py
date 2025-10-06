@@ -11,5 +11,6 @@ class Config:
 
     GUTENBERG_OPENAI_ENGINE_ID = GUTENBERG_CONFIG["openai_engine_id"]
     GUTENBERG_SYSTEM_INSTRUCTIONS = GUTENBERG_CONFIG["system_instructions"]
+    GUTENBERG_RETRY_COUNT = GUTENBERG_CONFIG["retry_count"]
 
     TEMPORARY_BINARY_FILES_PATH = "./temporary_binary_files"

@@ -91,8 +91,8 @@ async def handleVideoTag(video_tag: str):
     for p in audio_paths:
         try:
             os.remove(p)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error removing temp file {p}: {e}")
 
     # Transcribe the merged file (word-level if your get_transcription supports it)
     transcript_obj = await openai_client.get_transcription(
@@ -110,8 +110,8 @@ async def handleVideoTag(video_tag: str):
     # local cleanup
     try:
         os.remove(merged_path)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Error removing temp file {merged_path}: {e}")
 
     # Set attributes on <Video>
     public_url = S3.generate_public_url(

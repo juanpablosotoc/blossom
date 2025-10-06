@@ -14,7 +14,7 @@ interface Props {
 const WindowCarrousel: React.FC<Props> = ({ setActiveWindow, activeWindow }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [childWidth, setChildWidth] = useState<number>(0);
-    const windows = [Search, Assistant, BlossomGarden];
+    const windows = [Assistant, Search, BlossomGarden];
 
     // Measure the width of a child after the component mounts
     useEffect(() => {

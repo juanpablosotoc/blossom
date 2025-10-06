@@ -139,6 +139,7 @@ class LLMOpenAI:
             logger.info(f"TTS saved to {out_path}")
             return out_path
         except Exception as e:
+            print(f"\n\n\nError converting text to speech: {e}\n\n\n")
             raise self._wrap_error("Error converting text to speech", e)
 
     # ----------------------------------------------------
@@ -165,6 +166,7 @@ class LLMOpenAI:
                 )
             )
         except Exception as e:
+            print(f"\n\n\nError transcribing audio: {e}\n\n\n")
             raise self._wrap_error("Error transcribing audio", e)
 
     # ----------------------------------------------------
@@ -315,3 +317,4 @@ class LLMOpenAI:
                 # final_resp = await stream.get_final_response()
         except Exception as e:
             raise self._wrap_error("Error streaming response", e)
+

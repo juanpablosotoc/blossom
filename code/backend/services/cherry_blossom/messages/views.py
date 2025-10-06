@@ -1,17 +1,19 @@
 from fastapi import APIRouter, HTTPException
 from starlette.responses import StreamingResponse
 from sqlalchemy import select
-
+from myAws import S3
+from uuid import uuid4
+import os
 from myDependencies import AuthDep
 from myOrm.models import Thread, Message, FileAttachment
 from .utils import _extract_thread_id, sse_data
 from .schema import CreateMessageRequest
 from ..openai_client import openai_client
 from ..config import Config
-from ..gutenberg import transform_gutenberg
+from myExceptions.service import ServiceError
+from .layers import Accumulator, openai_raw_response, unprocessed_gutenberg_response, processed_gutenberg_response
 
 messages_route = APIRouter(prefix="/messages", tags=["messages"])
-
 
 # The streaming generator using Responses stream
 async def create_message_gen_stream(
@@ -45,18 +47,10 @@ async def create_message_gen_stream(
     await db_session.flush()  # ensure user_msg.id is available
 
     # First OpenAI call (raw model): STREAM → aggregate → save as unprocessed-info
-    yield sse_data("[OPENAI_RAW_RESPONSE_START]")
-    raw_accum = []
-    async for delta in openai_client.responses_stream(
-        model=Config.OPENAI_BASE_MODEL,
-        input=content,
-    ):
-        raw_accum.append(delta)
-        # stream deltas as they arrive; safe for newlines
-        yield sse_data(delta)
-    llm_text = "".join(raw_accum).strip()
-    yield sse_data("[OPENAI_RAW_RESPONSE_END]")
-
+    raw_accum = Accumulator()
+    async for sse_data_text in openai_raw_response(content, raw_accum): yield sse_data_text
+    
+    llm_text = "".join(raw_accum.accum).strip()
     # Save unprocessed-info
     resp_msg = Message(
         thread_id=thread.openai_thread_id,
@@ -66,34 +60,48 @@ async def create_message_gen_stream(
     db_session.add(resp_msg)
     await db_session.flush()
 
-    # Second call (your Gutenberg model): STREAM → aggregate → save as unprocessed-gutenberg
-    yield sse_data("[UNPROCESSED_GUTENBERG_START]")
-    gut_accum = []
-    async for delta in openai_client.responses_stream(
-        model=Config.GUTENBERG_OPENAI_ENGINE_ID,
-        input=[
-            {"role": "system", "content": Config.GUTENBERG_SYSTEM_INSTRUCTIONS},
-            {"role": "user", "content": llm_text},
-        ],
-    ):
-        gut_accum.append(delta)
-        yield sse_data(delta)
-    unprocessed_gutenberg_text = "".join(gut_accum).strip()
-    yield sse_data("[UNPROCESSED_GUTENBERG_END]")
+    for i in range(Config.GUTENBERG_RETRY_COUNT):
+        # Second call (your Gutenberg model): STREAM → aggregate → save as unprocessed-gutenberg
+        unprocessed_gutenberg_accum = Accumulator()
+        async for sse_data_text in unprocessed_gutenberg_response(llm_text, unprocessed_gutenberg_accum): yield sse_data_text
+        unprocessed_gutenberg_text = "".join(unprocessed_gutenberg_accum.accum).strip()
 
-    unprocessed_gutenberg_msg = Message(
-        thread_id=thread.openai_thread_id,
-        type="unprocessed-gutenberg",
-        content=unprocessed_gutenberg_text,
-    )
-    db_session.add(unprocessed_gutenberg_msg)
-    await db_session.flush()
+        unprocessed_gutenberg_msg = Message(
+            thread_id=thread.openai_thread_id,
+            type="unprocessed-gutenberg",
+            content=unprocessed_gutenberg_text,
+        )
+        db_session.add(unprocessed_gutenberg_msg)
+        await db_session.flush()
 
-    # Local transform of Gutenberg → (processed_text, extra_attachments)
-    yield sse_data("[PROCESS_GUTENBERG_START]")
-    processed_text, extra_attachments = await transform_gutenberg(unprocessed_gutenberg_text)
-    yield sse_data(processed_text)
-    yield sse_data("[PROCESS_GUTENBERG_END]")
+        # Local transform of Gutenberg → (processed_text, extra_attachments)
+        processed_gutenberg_accum = Accumulator()
+        try:
+            async for sse_data_text in processed_gutenberg_response(unprocessed_gutenberg_text, processed_gutenberg_accum): yield sse_data_text
+            break
+        except ServiceError as e:
+            # The xml of unprocessed_gutenberg_text is invalid
+            # commit to db to inspect
+            await db_session.commit()
+            # Re-compute the unprocessed-gutenberg_text
+            continue
+
+    if i == Config.GUTENBERG_RETRY_COUNT - 1:
+        # llm_text caused n errors in gutenberg
+        # Save llm_text for inspection
+        file_name = f"llm_text_error_{uuid4()}.txt"
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write(llm_text)
+        S3.upload_file(
+            bucket_name=Config.AWS_BUCKET_NAME,
+            object_name=file_name,
+            file_path=file_name,
+        )
+        # remove the file
+        os.remove(file_name)
+        raise ServiceError("Failed to process the unprocessed-gutenberg_text")
+
+    processed_text = "".join(processed_gutenberg_accum.accum).strip()
 
     processed_msg = Message(
         thread_id=thread.openai_thread_id,
@@ -104,7 +112,7 @@ async def create_message_gen_stream(
     await db_session.flush()
 
     # Persist any attachments produced by post-processing
-    for fa in extra_attachments:
+    for fa in processed_gutenberg_accum.attachments:
         if isinstance(fa, FileAttachment):
             fa.message_id = processed_msg.id
             db_session.add(fa)

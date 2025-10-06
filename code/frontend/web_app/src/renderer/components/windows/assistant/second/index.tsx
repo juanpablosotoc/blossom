@@ -91,7 +91,7 @@ function Second() {
         className={styles.chatInput}
         hasFileUpload={true}
         theme="dark"
-        placeholder="Ask Cherry Blossom to explain something."
+        placeholder="Ask Gutenberg to explain something."
         onSubmit={ask}
       />
     </div>

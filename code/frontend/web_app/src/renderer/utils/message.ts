@@ -22,6 +22,7 @@ async function messageStream(
     const token = dummyJWT;
     // Set query params
     const url = new URL(messages_endpoint);
+    
     url.searchParams.set("question", question);
 
     const res = await fetch(url.toString(), {
