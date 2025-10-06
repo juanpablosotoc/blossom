@@ -202,11 +202,10 @@ class BasicProcessing(Processing):
 
     def process(self) -> str:
         lines = self.s.split("\n")
-        # If you truly always have fragments on first/last lines, you can skip them;
-        # otherwise, process all lines robustly:
-        for idx, line in enumerate(lines):
+        for idx, line in enumerate(lines[1:-1]):
             if self.contains_tag(line):
                 lines[idx] = self.handle_tag(line)
             else:
                 lines[idx] = self.handle_body(line)
-        return "\n".join(lines)
+        return "<>\n" + "\n".join(lines) + "\n</>"
+        
