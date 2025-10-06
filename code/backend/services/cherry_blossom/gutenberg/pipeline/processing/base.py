@@ -19,6 +19,21 @@ _TAG_LINE_RE = re.compile(
     re.VERBOSE | re.DOTALL,
 )
 
+# last closing tag on the line: </tagName   >
+_CLOSE_TAG_RE = re.compile(
+    r'</\s*(?![!?])([A-Za-z][\w.\-:]*)\s*>'
+)
+
+# any tag start (opening or self-closing): <tagName ...> or <tagName/>
+_OPEN_OR_ANY_TAG_RE = re.compile(
+    r'<\s*/?\s*(?![!?])([A-Za-z][\w.\-:]*)\b'
+)
+
+# Opening or self-closing tag regex (not closing, not comment/PI)
+_OPEN_TAG_RE = re.compile(
+    r'<\s*(?!/)(?![!?])([A-Za-z][\w.\-:]*)\b[^>]*?>'
+)
+
 class Processing:
     def __init__(self, s: str):
         self.s = s
@@ -63,26 +78,54 @@ class Processing:
         return "</" in line and ">" in line
 
     @staticmethod
-    def compute_tag_name(line: str) -> str:
+    def contains_opening_tag(line: str) -> bool:
         """
-        Extract the bare tag name from something like:
-          <Tag attr="x">, </Tag>, <Tag/>, <Tag .../>
-        Returns 'Tag'.
+        Returns True if the string contains an opening or self-closing tag,
+        ignoring closing tags like </Tag> and special constructs like comments,
+        DOCTYPEs, or CDATA.
+        
+        Examples:
+        "<div>"                -> True
+        "<img />"              -> True
+        "text <p>content</p>"  -> True
+        "</p>"                 -> False
+        "<!-- comment -->"     -> False
+        "<?xml version='1.0'>" -> False
         """
         s = (line or "").strip()
-        if not s.startswith("<"):
-            raise ValueError(f"Not a tag: {line}")
+        return bool(_OPEN_TAG_RE.search(s))
 
-        i = 1
-        if i < len(s) and s[i] == "/":
-            i += 1
+    @staticmethod
+    def compute_tag_name(line: str) -> str:
+        """
+        Extract the element/tag name from a string that may contain:
+        - a closing tag with surrounding text:  '... </Tag  >'
+        - a single opening/self-closing tag:    '<Tag attr="x"/>' or '<Tag>'
+        - a full element:                       '<Tag>...</Tag>'
 
-        start = i
-        while i < len(s) and (s[i].isalnum() or s[i] in "._:-"):
-            i += 1
-        if start == i:
-            raise ValueError(f"Cannot find tag name in: {line}")
-        return s[start:i]
+        Preference: if a closing tag exists anywhere in the string, return that name.
+        Otherwise, return the first opening/self-closing tag name.
+
+        Raises ValueError if no element tag name is found (e.g., comments/CDATA/PI only).
+        """
+        s = (line or "").strip()
+        if not s:
+            raise ValueError(f"Cannot find tag name in empty string")
+
+        # 1) Prefer the last closing tag on the line (handles mixed content '... </tag>')
+        last_close = None
+        for m in _CLOSE_TAG_RE.finditer(s):
+            last_close = m  # keep last match
+        if last_close:
+            return last_close.group(1)
+
+        # 2) Otherwise, fall back to the first opening/self-closing tag
+        m = _OPEN_OR_ANY_TAG_RE.search(s)
+        if m:
+            return m.group(1)
+
+        # 3) Nothing found (maybe comment/CDATA/PI or plain text)
+        raise ValueError(f"Cannot find tag name in: {line!r}")
 
     @staticmethod
     def escape_special_characters(s: str) -> str:

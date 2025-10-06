@@ -184,28 +184,46 @@ class BasicProcessing(Processing):
 
     def handle_tag(self, line: str) -> str:
         s = line
+
+        # Fast path: already a single valid tag or a pure closing tag
         if self.is_closing_tag(s) or self.is_valid_xml(s):
             return s
 
-        if self.contains_closing_tag(s):
-            # Looks like an entire tag with body on one line
+        has_open = self.contains_opening_tag(s)
+        has_close = self.contains_closing_tag(s)
+
+        # Case 1: the line includes both an opening and a closing tag -> full element
+        if has_open and has_close:
             return self.handle_entire_tag(s)
 
-        # Opening tag only → temporarily close, process, then strip closing
-        name = self.compute_tag_name(s)
-        tmp = f"{s}</{name}>"
-        processed = self.handle_entire_tag(tmp)
-        # remove the appended closer (only one occurrence at end)
-        if processed.endswith(f"</{name}>"):
-            processed = processed[: -len(f"</{name}>")]
-        return processed
+        # Case 2: only opening tag present -> add temporary closing tag, process, then remove it
+        if has_open and not has_close:
+            name = self.compute_tag_name(s)
+            tmp = f"{s}</{name}>"
+            processed = self.handle_entire_tag(tmp)
+            end_tag = f"</{name}>"
+            if processed.endswith(end_tag):
+                processed = processed[: -len(end_tag)]
+            return processed
+
+        # Case 3: only closing tag present -> add temporary opening tag, process, then remove it
+        if has_close and not has_open:
+            name = self.compute_tag_name(s)  # should return the closing tag's name
+            tmp = f"<{name}>{s}"
+            processed = self.handle_entire_tag(tmp)
+            start_tag = f"<{name}>"
+            if processed.startswith(start_tag):
+                processed = processed[len(start_tag):]
+            return processed
+
+        # Fallback: no tags at all; treat as body text
+        return self.handle_body(s)
 
     def process(self) -> str:
         lines = self.s.split("\n")
         for idx, line in enumerate(lines[1:-1]):
-            if self.contains_tag(line):
-                lines[idx] = self.handle_tag(line)
-            else:
-                lines[idx] = self.handle_body(line)
+            if self.contains_tag(line): lines[idx] = self.handle_tag(line)
+            else: lines[idx] = self.handle_body(line)
+            
         return "<>\n" + "\n".join(lines) + "\n</>"
         
