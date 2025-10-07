@@ -6,10 +6,7 @@ import { Node } from '@/utils/treeTypes';
 
 
 interface Props {
-    setSearchQuery: (query: string) => void;
     tree: Node[][];
-    setActiveTabId: (id: string) => void;
-    onCreateDir: (row: number, col: number, name: string) => void;
 }
 
 function First(props: Props) {
@@ -28,13 +25,13 @@ function First(props: Props) {
                 </div>
 
                 <div className={`${styles.choiceContent} ${choice === 'search' ? styles.active : ''}`}>
-                    <SearchBar className={styles.searchBar} setSearchQuery={props.setSearchQuery} />
+                    <SearchBar className={styles.searchBar} setSearchQuery={()=>{}} />
                 </div>
                 <div className={`${styles.choiceContent} ${choice === 'tabs' ? styles.active : ''}`}>
                     <div className={styles.tabs}>
                         <div className={styles.tabsSep}
                         >
-                            <TabGrid tree={props.tree} setActiveTabId={props.setActiveTabId} onCreateDir={props.onCreateDir} />
+                            <TabGrid tree={props.tree} setActiveTabId={()=>{}} onCreateDir={()=>{}} />
                         </div>
                     </div>
                 </div>

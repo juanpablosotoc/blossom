@@ -11,19 +11,20 @@ type SSEMessage = { raw: string; json?: any; phase?: string };
 
 function Second() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [gutenbergStage, setGutenbergStage] = useState<'unprocessed-gutenberg' | 'processed-gutenberg'>('unprocessed-gutenberg');
+  const [unprocessedGutenbergReady, setUnprocessedGutenbergReady] = useState(false);
 
   const [streamText, setStreamText] = useState("");
-  const [finalJSX, setFinalJSX] = useState("");
+  const [unprocessedGutenbergJSX, setUnprocessedGutenbergJSX] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isReady, setIsReady] = useState(false);
 
   async function ask(question: string) {
     if (!question) throw new Error("Question is required");
 
     // reset state for a new run
-    setIsReady(false);
-    setFinalJSX("");
+    setUnprocessedGutenbergReady(false);
     setStreamText("");
+    setUnprocessedGutenbergJSX("");
     setIsLoading(true);
 
     // local accumulator is the single source of truth
@@ -38,17 +39,17 @@ function Second() {
           if (!phase) {
             acc += raw; // keep latest here
             setStreamText(prev => prev + raw);
-          } else if (
-            phase === "[OPENAI_RAW_RESPONSE_END]" ||
-            phase === "[UNPROCESSED_GUTENBERG_END]"
-          ) {
-            acc = "";            // reset local too
-            setStreamText("");   // and the visual buffer
+          } else {
+            // Is phase
+            if (phase.trim() === "[OPENAI_RAW_RESPONSE_END]") {
+              acc = "";            // reset local too
+              setStreamText("");   // and the visual buffer
+            }
           }
         },
         onDone: () => {
-          setFinalJSX(acc);      // always has the latest
-          setIsReady(true);
+          setUnprocessedGutenbergJSX(acc);      // always has the latest
+          setUnprocessedGutenbergReady(true);
         },
       });
     } catch (e) {
@@ -60,8 +61,8 @@ function Second() {
 
   return (
     <div className={styles.container + " " + (isLoading ? styles.loading : "")}>
-      <div className={styles.middle + " " + (isReady ? styles.showGutenberg : "")}>
-        {!isReady && !isLoading && (
+      <div className={styles.middle + " " + (unprocessedGutenbergReady ? styles.showGutenberg : "")}>
+        {!unprocessedGutenbergReady && !isLoading && (
           <GlowingCard className={styles.glowingCard} bgImg={BlossomImg}>
             <div className={styles.content}>
               <h2>What can I teach you today?</h2>
@@ -83,7 +84,7 @@ function Second() {
           </div>
         )}
 
-        {isReady && <GutenbergRenderer jsx={finalJSX} />}
+        {unprocessedGutenbergReady && <GutenbergRenderer jsxCode={unprocessedGutenbergJSX} stage={gutenbergStage} />}
       </div>
 
       <ChatInput

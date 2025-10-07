@@ -8,13 +8,10 @@ WORKDIR /app
 
 # ffmpeg: audio processing (pydub, etc.)
 # build-essential/gcc: C-extension wheels (e.g., audioop-lts)
-# nodejs + npm: required by execjs to compile/execute process_jsx.js
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     build-essential \
     gcc \
-    nodejs \
-    npm \
   && rm -rf /var/lib/apt/lists/*
 
 # Bring in local libraries
@@ -22,12 +19,7 @@ COPY libraries/ /app/libraries/
 
 # Copy JS assets
 COPY services/cherry_blossom/gutenberg.json /app/
-COPY services/cherry_blossom/package-lock.json /app/
-COPY services/cherry_blossom/package.json /app/
-COPY services/cherry_blossom/process_jsx.js /app/
 COPY services/cherry_blossom/temporary_binary_files /app/temporary_binary_files
-
-RUN npm ci --omit=dev
 
 # Install Python deps
 COPY services/cherry_blossom/requirements/docker-requirements.txt /app/

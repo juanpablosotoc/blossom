@@ -1,0 +1,29 @@
+.wrapper {
+    $distanceTop: 16px;
+    $color: var(--white-900);
+    $bgColor: var(--red-error);
+    
+    position: fixed;
+    z-index: 1000;
+    top: $distanceTop;
+    left: 0;
+    right: 0;
+
+    .inner {
+        $verticalPadding: 8px;
+        $horizontalPadding: 16px;
+        $borderRadius: 5px;
+        $font: var(--typo-par-xs);
+        
+        padding: $verticalPadding $horizontalPadding;
+        background-color: $bgColor;
+        color: $color;
+        border-radius: $borderRadius;
+        width: fit-content;
+        max-width: 50%;
+        text-align: center;
+        text-wrap: wrap;
+        margin: 0 auto;
+        font: $font;
+    }
+}

@@ -51,6 +51,9 @@
         --blue-#{$name-value}: hsl(#{$blue-hue}, 100%, #{$lightness-value});
     }
 
+    --red-error: hsl(355, 100%, 60%);
+    --green-success: hsl(141, 100%, 65%);
+
     // #########################################################################
     // ############################## TYPOGRAPHY ###############################
     // #########################################################################
@@ -83,6 +86,7 @@
     --typo-par-l: 16px #{$inter-font}; // should have 0 as letter spacing
     --typo-par-m: 14px #{$inter-font}; // should have 0 as letter spacing
     --typo-par-s: 12px #{$inter-font}; // should have 0 as letter spacing
+    --typo-par-xs: 8px #{$inter-font}; // should have 0 as letter spacing
 
     // Letter spacing 
     --typo-letter-spacing-large: 3px; // should have 12% as letter spacing

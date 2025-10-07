@@ -1,5 +1,5 @@
 const domain = 'https://api.notblossom.com';
-const messages_endpoint = `${domain}/messages/`;
+const unprocessedGutenbergStream_endpoint = `${domain}/messages/unprocessed-gutenberg`;
 const dummyJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0fQ.iakE_QRFcKSp0uDwcfkoUY7J8rgwvWU7WmKcoo8tbrs";
 
 
@@ -21,7 +21,7 @@ async function messageStream(
   ) {
     const token = dummyJWT;
     // Set query params
-    const url = new URL(messages_endpoint);
+    const url = new URL(unprocessedGutenbergStream_endpoint);
     
     url.searchParams.set("question", question);
 
@@ -58,19 +58,19 @@ async function messageStream(
           const lines = part.split(/\r?\n/).filter(Boolean);
           for (const line of lines) {
             if (!line.startsWith("data:")) continue;
-            const payload = line.slice(5).trim(); // remove "data:"
+            const payload = line.slice(6);
   
-            if (payload === "[DONE]") {
+            if (payload.trim() === "[DONE]") {
               onDone?.();
               reader.cancel().catch(() => {});
               return;
             }
   
-            // detect phase markers you emit server-side
+            // detect phase markers are emitted server-side
             // "[OPENAI_RAW_RESPONSE]", "[UNPROCESSED_GUTENBERG_RESPONSE]"
             let phase: string | undefined;
-            if (/^\[[A-Z_]+\]$/.test(payload)) {
-              phase = payload;
+            if (/^\[[A-Z_]+\]$/.test(payload.trim())) {
+              phase = payload.trim();
               onMessage({ raw: payload, phase });
               continue;
             }

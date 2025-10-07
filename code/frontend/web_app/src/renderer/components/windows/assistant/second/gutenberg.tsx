@@ -1,19 +1,27 @@
-import { transformJsxCodeToReactComponent } from "@/components/gutenberg/utils";
+import { transformJsxCodeToReactComponent as processedGutenbergEl} from "@/components/gutenberg/processedGutenbergEl";
+import { transformJsxCodeToReactComponent as unprocessedGutenbergEl} from "@/components/gutenberg/unprocessedGutenbergEl";
 import styles from '@/components/gutenberg/general.module.scss';
 import { useEffect, useState } from "react";
-import Output1 from "@/components/gutenberg/test_gut1";
-import Output2 from "@/components/gutenberg/test_gut2";
 
-function GutenbergRenderer({ jsx }: { jsx: string }) {
+interface GutenbergRendererProps {
+    jsxCode: string;
+    stage: 'unprocessed-gutenberg' | 'processed-gutenberg';
+}
+
+function GutenbergRenderer({ jsxCode, stage }: GutenbergRendererProps) {
     const [Component, setComponent] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
       try {
-        setComponent(() => transformJsxCodeToReactComponent(jsx));
+        if (stage === 'unprocessed-gutenberg') {
+            setComponent(() => unprocessedGutenbergEl(jsxCode));
+        } else if (stage === 'processed-gutenberg') {
+            setComponent(() => processedGutenbergEl(jsxCode));
+        }
       } catch (e) {
         console.error('Error transforming jsx to react component', e);
       }
-    }, [jsx]);
+    }, [jsxCode, stage]);
 
     return (
       <div className={styles.scope}>
@@ -21,14 +29,5 @@ function GutenbergRenderer({ jsx }: { jsx: string }) {
       </div>
     );
   }
-
-// For testing
-// function GutenbergRenderer({ jsx }: { jsx: string }) {
-//     return (
-//       <div className={styles.scope}>
-//         <Output2 />
-//       </div>
-//     )
-// };
 
 export default GutenbergRenderer;
