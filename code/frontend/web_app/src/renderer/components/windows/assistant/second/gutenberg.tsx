@@ -6,15 +6,16 @@ import { useEffect, useState } from "react";
 interface GutenbergRendererProps {
     jsxCode: string;
     stage: 'unprocessed-gutenberg' | 'processed-gutenberg';
+    setError: (error: string) => void;
 }
 
-function GutenbergRenderer({ jsxCode, stage }: GutenbergRendererProps) {
+function GutenbergRenderer({ jsxCode, stage, setError }: GutenbergRendererProps) {
     const [Component, setComponent] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
       try {
         if (stage === 'unprocessed-gutenberg') {
-            setComponent(() => unprocessedGutenbergEl(jsxCode));
+            setComponent(() => unprocessedGutenbergEl(jsxCode, setError));
         } else if (stage === 'processed-gutenberg') {
             setComponent(() => processedGutenbergEl(jsxCode));
         }

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback, ReactNode } from 'react';
-import { ReactFlow, Controls, Background, Node, Edge, useNodesState, useEdgesState, useReactFlow } from '@xyflow/react';
+import { ReactFlow, Controls, Background, Node, Edge, useNodesState, useEdgesState, useReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css'; // Import the new required stylesheet
 import dagre from 'dagre';
 import { CustomNodeChild, CustomNodeRoot } from '../node';
 import { parseNodesAndEdges } from '../../utils';
 import styles from './styles.module.css';
+import ErrorBoundary from '@/components/errorBoundary';
 
 const nodeWidth = 172;
 const nodeHeight = 36;
@@ -97,11 +98,15 @@ function ConceptMap(props: React.PropsWithChildren<{}>) {
   const wrapper = useRef<HTMLDivElement>(null);
 
   return (
+    <ErrorBoundary errorMessage="Error in ConceptMap component" onError={(error)=>{console.error(error)}}>
     <div style={{ opacity }} ref={wrapper} className={styles.wrapper}>
-      <FlowWrapper>
-        {props.children}
-      </FlowWrapper>
+      <ReactFlowProvider>
+        <FlowWrapper>
+          {props.children}
+        </FlowWrapper>
+      </ReactFlowProvider>
     </div>
+    </ErrorBoundary>
   );
 }
 

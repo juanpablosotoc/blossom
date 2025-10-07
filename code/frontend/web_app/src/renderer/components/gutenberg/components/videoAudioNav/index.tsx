@@ -4,6 +4,7 @@ import Forward from '../../icons/forward';
 import Pause from '../../icons/pause';
 import Play from '../../icons/play';
 import { useRef } from 'react';
+import ErrorBoundary from '@/components/errorBoundary';
 
 
 interface Props {
@@ -26,6 +27,7 @@ export default function VideoAudioNav(props: Props) {
         return `${minutes}:${seconds}`;
     };
     return (
+        <ErrorBoundary errorMessage="Error in VideoAudioNav component" onError={(error)=>{console.error(error)}}>  
     <div className={styles.wrapper + ' ' + (props.className ? props.className : '')} ref={wrapperRef}>
         <div className={styles.buttons}>
             <button onClick={(e)=>props.backwardNSeconds()}>
@@ -55,5 +57,6 @@ export default function VideoAudioNav(props: Props) {
             <span className={styles.timeMetadata}>{formatTime(props.duration)}</span>
         </div>
     </div>
+    </ErrorBoundary>
     )
 };

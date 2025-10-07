@@ -1,49 +1,58 @@
 import VideoAudioNav from '../../videoAudioNav';
-import styles from '../styles.module.css';
-import React, { useState } from 'react';
+import styles from '../styles.module.scss';
+import React, { useEffect, useRef, useState } from 'react';
+import Audio from '../../audio/unprocessed';
+import { Line, Word } from '../../../utils';
+import ErrorBoundary from '@/components/errorBoundary';
+import Frame from '../../frame';
+import VideoAudio from '../../VideoAudio';
+import { generateAudio } from '@/utils/message';
 
+// export default function Video(props: React.PropsWithChildren<{title: string}>) {
+//     const wrapperRef = useRef<HTMLDivElement>(null);
+//     const [currentPlayState, setCurrentPlayState] = useState<'playing' | 'paused'>('paused');
 
-interface VideoProps {
-    title: string;
-    children: React.ReactElement<{start: number, end: number}>[];
-}
+//     useEffect(() => {
+//         const FrameElements =  React.Children.toArray(props.children).filter((child) => React.isValidElement(child) && child.type === Frame);
+//         const VideoAudioElements =  React.Children.toArray(FrameElements).filter((child) => React.isValidElement(child) && child.type === VideoAudio);
+//         for (const i = 0; i < VideoAudioElements.length; i++) {
+//             const VideoAudioElement = VideoAudioElements[i];
+//             const FrameElement = FrameElements[i];
 
-export default function Video(props: React.PropsWithChildren<VideoProps>) {
-    const currentTime = 0;
-    const [currentPlayState, setCurrentPlayState] = useState<'playing' | 'paused'>('paused');
+//             const textChild = React.Children.toArray(VideoAudioElement.props.children).find((child) => typeof child === 'string');
+//             if (textChild) {
+//                 generateAudio(textChild).then((res)=>{
+//                     console.log("Processed audio response: ", res);
 
+//                     // setHaveProcessedAudio(true);
+//                     // setProcessedAudioSrc(res.audio_src);
+//                     // setProcessedAudioTranscript(res.transcript);
+//                 });
+//             }
+//         }
+//     }, [props.children]);
+//     return (
+//         <ErrorBoundary errorMessage="Error in Video component" onError={(error)=>{console.error(error)}}>  
+//         <div className={styles.video} ref={wrapperRef}>
+//             <div className={styles.over}>
+//                 <p className={styles.title}>{props.title}</p>
+//                 <VideoAudioNav pause={()=>{}} play={()=>{}} forwardNSeconds={()=>{}} backwardNSeconds={()=>{}} currentPlayState={currentPlayState} currentTime={0} handleSeek={()=>{}} setCurrentTime={()=>{}} duration={0}></VideoAudioNav>
+//             </div>
+//             <div className={styles.content + " " + styles.shimmer} data-is-parent={true}>
+//             {React.Children.map(props.children, (child) => {
+//     if (React.isValidElement(child)) {
+//         return React.cloneElement(child, { 'isActive': false } as any);; // Return the child as is if it's not a valid React element
+//         }})}
+//             </div>
+//         </div>
+//         </ErrorBoundary>
+//     );
+// }
+
+export default function Video(props: React.PropsWithChildren<{title: string}>) {
     return (
-        <div className={styles.video}>
-            <div className={styles.over}>
-                <p className={styles.title}>{props.title}</p>
-                <VideoAudioNav pause={()=>{}} play={()=>{}} 
-                forwardNSeconds={()=>{}} 
-                backwardNSeconds={()=>{}} 
-                currentPlayState={currentPlayState} 
-                currentTime={0} handleSeek={()=>{}} 
-                setCurrentTime={()=>{}} duration={0}></VideoAudioNav>
-                <audio controls hidden onPlay={()=>{}} onPause={()=>{}}>
-                    <source type="audio/mpeg" />
-                Your browser does not support the audio element.
-            </audio>
-            </div>
-            <div className={styles.content} data-is-parent={true}>
-            {React.Children.map(props.children, (child) => {
-    if (React.isValidElement(child)) {
-        // Access the start and end attributes from the child's props
-        const start = (child.props as any).start;
-        const end = (child.props as any).end;
-        if (start && end) {
-            // Check if the current time is within the start and end range
-            if (currentTime >= start && currentTime <= end) {
-                // Return the child with the active prop set to true
-                return React.cloneElement(child, { 'isActive': true } as any);
-            }
-        }
-
-        return React.cloneElement(child, { 'isActive': false } as any);; // Return the child as is if it's not a valid React element
-        }})}
-            </div>
-        </div>
-    );
+        <ErrorBoundary errorMessage="Error in Video component" onError={(error)=>{console.error(error)}}>  
+        <Audio title={props.title}>{props.children}</Audio>
+        </ErrorBoundary>
+    )
 }

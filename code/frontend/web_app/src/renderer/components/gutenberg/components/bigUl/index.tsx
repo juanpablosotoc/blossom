@@ -1,26 +1,53 @@
-import React from 'react';
-import styles from './styles.module.css';
+import React from "react";
+import styles from "./styles.module.css";
+import ErrorBoundary from "@/components/errorBoundary";
 
-export default function BigUl(props: React.PropsWithChildren<{title?: string}>) {
-    const [currentBar, setCurrentBar] = React.useState(0);
-    function handleClick(index: number) {
-        setCurrentBar(index);
-    }
-    return (
-    <div className={styles.sequence}>
-        {props.title && <h3 className={styles.title}>{props.title}</h3>}
+type Props = React.PropsWithChildren<{ title?: string }>;
+
+export default function BigUl({ title, children }: Props) {
+  const [currentBar, setCurrentBar] = React.useState(0);
+
+  // Normalize & filter children to valid elements only
+  const items = React.useMemo(
+    () =>
+      React.Children.toArray(children)
+        .filter(React.isValidElement), // drop strings/whitespace/nulls
+    [children]
+  );
+
+  return (
+    <ErrorBoundary errorMessage="Error in BigUl component" onError={(e)=>console.error(e)}>
+      <div className={styles.sequence}>
+        {title && <h3 className={styles.title}>{title}</h3>}
         <div className={styles.content}>
-        {/* for every child add a bar */ React.Children.map(props.children, (child, index) => {
+          {items.map((child, index) => {
+            const isActive = currentBar === index;
+            const isPrev = index < currentBar;
+
             return (
-                <div className={styles.innerWrapper + ' ' + (currentBar === index ? styles.active : (index < currentBar ? styles.prevActive : ''))}>
-                    <div className={styles.bar} onClick={(e)=>{handleClick(index)}}></div>
-                    <div className={styles.sequencewrapper}  data-is-parent={true}>
-                        {child}
-                    </div>
+              <div
+                key={(child as any).key ?? index} // stable key
+                className={[
+                  styles.innerWrapper,
+                  isActive ? styles.active : "",
+                  isPrev ? styles.prevActive : "",
+                ].join(" ").trim()}
+              >
+                <button
+                  type="button"
+                  className={styles.bar}
+                  onClick={() => setCurrentBar(index)}
+                  aria-pressed={isActive}
+                  aria-label={`Show item ${index + 1}`}
+                />
+                <div className={styles.sequencewrapper} data-is-parent>
+                  {child}
                 </div>
-            )
-        })}
+              </div>
+            );
+          })}
         </div>
-    </div>
-    )
+      </div>
+    </ErrorBoundary>
+  );
 }

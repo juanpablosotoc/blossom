@@ -16,10 +16,30 @@
     max-height: 40vh;
     overflow-y: scroll;
     text-align: center;
-    background-color: var(--main_primary);
+    background: var(--main_primary);
     width: fit-content;
     padding: 32px 64px;
     border-radius: 10px;
+
+    &.shimmer {
+        background: linear-gradient(
+        135deg,
+        var(--main_primary) 0%,
+        var(--main_primary_80) 50%,
+        var(--main_primary) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s ease-in-out infinite;
+
+        @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+        }
+    }
 }
 
 .titleWrapper {

@@ -30,6 +30,28 @@
     opacity: 1;
 }
 
+.content {
+    &.shimmer {
+        background: linear-gradient(
+        135deg,
+        var(--main_black) 0%,
+        var(--main_black_80) 50%,
+        var(--main_black) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s ease-in-out infinite;
+
+        @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+        }
+    }
+}
+
 .title {
     font: var(--font_sm);
     letter-spacing: 2px;

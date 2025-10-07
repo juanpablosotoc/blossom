@@ -19,6 +19,7 @@ import Timeline from './components/timeline';
 import TimelineEvent from './components/timelineEvent';
 import Video from './components/video';
 import VideoAudioNav from './components/videoAudioNav';
+import VideoAudio from './components/VideoAudio';
 
 const scope = {
   React,
@@ -39,6 +40,7 @@ const scope = {
   Timeline,
   TimelineEvent,
   Video,
+  VideoAudio,
   VideoAudioNav,
 };
 

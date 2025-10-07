@@ -1,7 +1,8 @@
 import VideoAudioNav from '../videoAudioNav';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 import React, { useEffect, useRef, useState } from 'react';
 import { Line, Word } from '../../utils';
+import ErrorBoundary from '@/components/errorBoundary';
 
 export default function Video(props: React.PropsWithChildren<{title: string, transcript: string, audioSrc: string}>) {
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -133,6 +134,7 @@ export default function Video(props: React.PropsWithChildren<{title: string, tra
         setCurrentPlayState('paused');
     }
     return (
+        <ErrorBoundary errorMessage="Error in Video component" onError={(error)=>{console.error(error)}}>  
         <div className={styles.video} ref={wrapperRef}>
             <div className={styles.over}>
                 <p className={styles.title}>{props.title}</p>
@@ -160,5 +162,6 @@ export default function Video(props: React.PropsWithChildren<{title: string, tra
         }})}
             </div>
         </div>
+        </ErrorBoundary>
     );
 }

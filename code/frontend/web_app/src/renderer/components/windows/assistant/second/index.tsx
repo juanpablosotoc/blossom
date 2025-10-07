@@ -6,6 +6,7 @@ import RecommendationCard from "@myComponents/recommendationCard";
 import BlossomImg from "@myComponents/blossomImg";
 import { messageStream, healthCheck } from "@myUtils/message";
 import GutenbergRenderer from "./gutenberg";
+import ErrorPopup from "@/components/errorPopup";
 
 type SSEMessage = { raw: string; json?: any; phase?: string };
 
@@ -17,9 +18,13 @@ function Second() {
   const [streamText, setStreamText] = useState("");
   const [unprocessedGutenbergJSX, setUnprocessedGutenbergJSX] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorPopup, setErrorPopup] = useState("");
+  const [prevQuestion, setPrevQuestion] = useState("");
 
   async function ask(question: string) {
     if (!question) throw new Error("Question is required");
+
+    setPrevQuestion(question);
 
     // reset state for a new run
     setUnprocessedGutenbergReady(false);
@@ -59,6 +64,19 @@ function Second() {
     }
   }
 
+  function setError(error: string) {
+    console.error(error);
+    setErrorPopup(error);
+    setIsLoading(false);
+    setUnprocessedGutenbergReady(false);
+    setTimeout(() => {
+      setErrorPopup("");
+    }, 3000);
+
+    // Try ask again
+    ask(prevQuestion);
+  }
+
   return (
     <div className={styles.container + " " + (isLoading ? styles.loading : "")}>
       <div className={styles.middle + " " + (unprocessedGutenbergReady ? styles.showGutenberg : "")}>
@@ -75,6 +93,8 @@ function Second() {
           </GlowingCard>
         )}
 
+        {errorPopup && <ErrorPopup error={errorPopup} />}
+
         {isLoading && (
           <div className={styles.gutenbergLoading}>
             {/* preserve whitespace while streaming */}
@@ -84,7 +104,7 @@ function Second() {
           </div>
         )}
 
-        {unprocessedGutenbergReady && <GutenbergRenderer jsxCode={unprocessedGutenbergJSX} stage={gutenbergStage} />}
+        {unprocessedGutenbergReady && <GutenbergRenderer jsxCode={unprocessedGutenbergJSX} stage={gutenbergStage} setError={setError} />}
       </div>
 
       <ChatInput

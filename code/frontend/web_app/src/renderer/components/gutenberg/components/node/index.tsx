@@ -4,10 +4,11 @@ import ReactDOM from 'react-dom';
 import Close from '../../icons/close';
 import Chevron from '../../icons/chevron';
 import React from 'react';
+import ErrorBoundary from '@/components/errorBoundary';
 
 export const CustomNodeRoot = React.memo(({ data }: any) => {
   return (
-    <>
+    <ErrorBoundary errorMessage="Error in CustomNodeRoot component" onError={(error)=>{console.error(error)}}>
       <div onClick={(e)=>{
        data.setActiveNode(data.index);
       }}>
@@ -39,13 +40,13 @@ export const CustomNodeRoot = React.memo(({ data }: any) => {
         </div>
       </div>
       ,document.body)}
-    </>
+    </ErrorBoundary>
   );
 });
 
 export const CustomNodeChild = React.memo(({ data }: any) => {
   return (
-    <>
+    <ErrorBoundary errorMessage="Error in CustomNodeChild component" onError={(error)=>{console.error(error)}}>
       <div onClick={(e)=>{
        data.setActiveNode(data.index);
       }}>
@@ -78,6 +79,6 @@ export const CustomNodeChild = React.memo(({ data }: any) => {
         </div>
       </div>
       ,document.body)}
-    </>
+    </ErrorBoundary>
   );
 });

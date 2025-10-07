@@ -54,22 +54,28 @@ function evalInScope(jsCode: string, sandbox: Record<string, any>) {
   return runner(sandbox);
 }
 
-export function transformJsxCodeToReactComponent(jsxCode: string) {
+export function transformJsxCodeToReactComponent(jsxCode: string, setError: (error: string) => void) {
   if (!jsxCode) throw new Error('jsxCode is required');
 
-  // Ensure the JSX expression evaluates to an element or a fragment
-  const wrapped = `(function(){ return (${jsxCode}); })()`;
+  try {
 
-  const { code } = transform(wrapped, {
-    presets: [['react', { runtime: 'classic' }]], // classic requires React in scope
+    // Ensure the JSX expression evaluates to an element or a fragment
+    const wrapped = `(function(){ return (${jsxCode}); })()`;
+
+    const { code } = transform(wrapped, {
+      presets: [['react', { runtime: 'classic' }]], // classic requires React in scope
   });
 
   if (typeof code !== 'string') throw new Error('transformedCode is not a string');
 
-  const element = evalInScope(code, scope);
+    const element = evalInScope(code, scope);
 
-  // Return a React component that renders the produced element
-  return function Rendered() {
-    return element;
+    // Return a React component that renders the produced element
+    return function Rendered() {
+          return element;
+      };
+  } catch (e) {
+    setError('Error transforming jsx to react component');
+    return null;
   };
 }

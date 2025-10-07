@@ -1,16 +1,17 @@
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 import React, { useState, useEffect, useRef } from 'react';
 import { Word, Line } from '../../utils';
 import VideoAudioNav from '../videoAudioNav';
+import ErrorBoundary from '@/components/errorBoundary';
 
 interface AudioProps {
     src: string;
-    transcript: string;
+    transcript: Array<Word>;
     title?: string;
 }
 
 
-export default function Audio({ src, transcript: transscriptStr, title }: AudioProps) {
+export default function Audio({ src, transcript, title }: AudioProps) {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [currentLineIndex, setCurrentLineIndex] = useState<number | null>(null);
@@ -23,7 +24,6 @@ export default function Audio({ src, transcript: transscriptStr, title }: AudioP
     let currentLine: Line = { wordCount: 0, text: '' };
     let prevWordEndTime = null;
     const [currentPlaybackSpeed, setCurrentPlaybackSpeed] = useState<string>('normal');
-    const transcript = JSON.parse(transscriptStr) as Array<Word>;
 
     for (let word of transcript) {
         if (currentLine.wordCount === 0) {
@@ -169,6 +169,7 @@ export default function Audio({ src, transcript: transscriptStr, title }: AudioP
         setCurrentPlayState('paused');
     }
     return (
+        <ErrorBoundary errorMessage="Error in Audio component" onError={(error)=>{console.error(error)}}>  
         <div className={styles.wrapper} ref={wrapperRef}>
             <div className={styles.content}>
             <p className={styles.transcript} onScroll={handleScroll} ref={linesContainerRef}>
@@ -200,5 +201,6 @@ export default function Audio({ src, transcript: transscriptStr, title }: AudioP
                 </div>
             </div>
         </div>
+        </ErrorBoundary>
     );
 }

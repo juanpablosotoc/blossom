@@ -152,7 +152,7 @@ class LLMOpenAI:
     *,
     model: str = "whisper-1",
     prompt: Optional[str] = None,
-    granularity: Optional[str] = None,  # "word" | "segment"
+    granularity: Optional[str] = 'word',  # "word" | "segment"
     ) -> Any:
         path = Path(audio_file_path)
         try:
@@ -162,7 +162,7 @@ class LLMOpenAI:
                     model=model,
                     response_format="verbose_json",
                     prompt=prompt,
-                    timestamp_granularities=[granularity] if granularity else None,
+                    timestamp_granularities=[granularity],
                 )
             )
         except Exception as e:

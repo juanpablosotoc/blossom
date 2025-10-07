@@ -1,7 +1,10 @@
-import styles from '../styles.module.css';
+import styles from '../styles.module.scss';
 import React, { useState, useEffect, useRef } from 'react';
-import { Line } from '../../../utils';
 import VideoAudioNav from '../../videoAudioNav';
+import { generateAudio } from '../../../../../utils/message';
+import ProcessedAudio from '../index';
+import ErrorBoundary from '@/components/errorBoundary';
+
 
 interface AudioProps {
     title?: string;
@@ -17,23 +20,16 @@ export default function Audio(props: React.PropsWithChildren<AudioProps>) {
     const [currentPlayState, setCurrentPlayState] = useState<'playing' | 'paused'>('paused');
     const [currentPlaybackSpeed, setCurrentPlaybackSpeed] = useState<string>('normal');
     const [transcriptSpans, setTranscriptSpans] = useState<React.ReactNode[]>([]);
+    const [haveProcessedAudio, setHaveProcessedAudio] = useState<boolean>(false);
+    const [processedAudioSrc, setProcessedAudioSrc] = useState<string>('');
+    const [processedAudioTranscript, setProcessedAudioTranscript] = useState<string>('');
+    const [errorProcessingAudio, setErrorProcessingAudio] = useState<boolean>(false);
 
-    useEffect(() => {
-        // Get the text child
-        const textChild = React.Children.toArray(props.children).find((child) => typeof child === 'string');
-        if (textChild) {
-            setTranscriptSpans(textChild.split(' ').map((word, index) => (
-                <span key={index} className={index === 0 ? styles.highlight : ''} onClick={()=>{}}>
-                    {word}
-                </span>
-            )));
-        }
-    }, [props.children]);
-    
-    return (
-        <div className={styles.wrapper} ref={wrapperRef}>
+    const fallbackRender = () => {
+        return (
+            <div className={styles.wrapper} ref={wrapperRef}>
             <div className={styles.content}>
-                <p className={styles.transcript} ref={linesContainerRef}>
+                <p className={styles.transcript + " " + styles.shimmer} ref={linesContainerRef}>
                     <div className={styles.titleWrapper}>
                         <p className={styles.title}>{props.title ? props.title : ''}</p>
                         <select>
@@ -62,5 +58,47 @@ export default function Audio(props: React.PropsWithChildren<AudioProps>) {
                 </div>
             </div>
         </div>
+        );
+    };
+
+    useEffect(() => {
+        // Set the visuals----------------------------
+        const textChild = React.Children.toArray(props.children).find((child) => typeof child === 'string');
+        if (textChild) {
+            // Split text every 3 words
+            const words = textChild.split(' ');
+            const wordsChunks = [];
+            for (let i = 0; i < words.length; i += 3) {
+                wordsChunks.push(words.slice(i, i + 3).join(' '));
+            }
+            setTranscriptSpans(wordsChunks.map((word, index) => (
+                <span key={index} className={index === 0 ? styles.highlight : ''} onClick={()=>{}}>
+                    {word}
+                </span>
+            )));
+        }
+        //--------------------------------------------
+        if (textChild) {
+            generateAudio(textChild).then((res)=>{
+                console.log("Processed audio response: ", res);
+
+                setHaveProcessedAudio(true);
+                setProcessedAudioSrc(res.audio_src);
+                setProcessedAudioTranscript(res.transcript);
+            }).catch((err)=>{
+                console.error("Error processing audio: ", err);
+                setErrorProcessingAudio(true);
+            });
+        }
+    }, [props.children]);
+    
+    return (
+        <ErrorBoundary errorMessage="Error in Audio component" onError={(error)=>{console.error(error)}} fallbackRender={fallbackRender}>  
+        {haveProcessedAudio && !errorProcessingAudio ? (
+        <ProcessedAudio src={processedAudioSrc} transcript={processedAudioTranscript as any} title={props.title} />
+    ) : (
+        fallbackRender()
+    )}
+    </ErrorBoundary>
     );
 }

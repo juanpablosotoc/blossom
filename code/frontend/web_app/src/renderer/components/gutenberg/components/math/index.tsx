@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import ErrorBoundary from '@/components/errorBoundary';
 
 
 interface Props {
@@ -19,7 +20,12 @@ const Math = (props: Props) => {
     }
   }, [props.mathExpression]);
 
-  return <span ref={mathContainerRef}></span>;
+  return (
+    <ErrorBoundary errorMessage="Error in Math component" onError={(error)=>{console.error(error)}}> 
+  <span ref={mathContainerRef}></span>
+  </ErrorBoundary>
+
+  );
 };
 
 export default Math;

@@ -11,21 +11,13 @@ class Accumulator:
 async def openai_raw_response(content: str, accumulator: Accumulator):
     # First OpenAI call (raw model): STREAM → aggregate → save as unprocessed-info
     yield sse_data("[OPENAI_RAW_RESPONSE_START]")
-    i = 0
-    last_delta = ''
     async for delta in openai_client.responses_stream(
         model=Config.OPENAI_BASE_MODEL,
         input=content,
     ):
-        # Make sure contains <> fragment
-        if i == 0 and delta.strip() not in ['<>', '< >']: delta = '<>' + delta
-        last_delta = delta
         accumulator.accum.append(delta)
         # stream deltas as they arrive; safe for newlines
         yield sse_data(delta)
-        i += 1
-    # Make sure contains </> fragment
-    if last_delta.strip() not in ['</>', '</ >']: last_delta = '</>' + last_delta
 
     yield sse_data("[OPENAI_RAW_RESPONSE_END]")
 

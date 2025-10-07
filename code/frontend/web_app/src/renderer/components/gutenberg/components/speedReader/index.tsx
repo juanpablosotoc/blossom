@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styles from './styles.module.css';
 import VideoAudioNav from '../videoAudioNav';
 import { getWordCount } from '../../utils';
+import ErrorBoundary from '@/components/errorBoundary';
 
 export default function SpeedReader(props: React.PropsWithChildren<{}>) {
     const [preFixation, setPreFixation] = React.useState<string>('');
@@ -175,6 +176,7 @@ export default function SpeedReader(props: React.PropsWithChildren<{}>) {
     }, [currentPlayState, currentTime]);
 
     return (
+        <ErrorBoundary errorMessage="Error in SpeedReader component" onError={(error)=>{console.error(error)}}> 
         <div className={styles.wrapper} style={{'--preFixation': `'${preFixation}'`, '--postFixation': `'${postFixation}'`} as any} ref={wrapperRef}>
             <div className={styles.top}>
                 <div className={styles.content} ref={contentRef}>  
@@ -197,5 +199,6 @@ export default function SpeedReader(props: React.PropsWithChildren<{}>) {
                 <VideoAudioNav className={styles.audioNav} forwardNSeconds={forwardNSeconds} backwardNSeconds={backwardNSeconds} handleSeek={handleSeek} setCurrentTime={setCurrentTime} pause={pause} play={play} currentPlayState={currentPlayState} currentTime={currentTime} duration={accumulatedTime}></VideoAudioNav>
             </div>
         </div>
+        </ErrorBoundary>
     );
 }

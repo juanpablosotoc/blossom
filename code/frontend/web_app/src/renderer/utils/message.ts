@@ -1,5 +1,6 @@
 const domain = 'https://api.notblossom.com';
 const unprocessedGutenbergStream_endpoint = `${domain}/messages/unprocessed-gutenberg`;
+const tts_endpoint = `${domain}/ai/tts/`;
 const dummyJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0fQ.iakE_QRFcKSp0uDwcfkoUY7J8rgwvWU7WmKcoo8tbrs";
 
 
@@ -99,6 +100,21 @@ async function healthCheck() {
     const json_res = await res.json();
     console.log("\n\n\n\n\n\nHealth check response: ", json_res, "\n\n\n\n\n");
     return res.ok;
+}
+
+export async function generateAudio(text: string) {
+  const url = new URL(tts_endpoint);
+    
+    url.searchParams.set("text", text);
+
+    const res = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+          ...(dummyJWT ? { Authorization: `Bearer ${dummyJWT}` } : {}),
+        },
+    });
+    const json_res = await res.json();
+    return json_res;
 }
 
 export { messageStream, healthCheck };
